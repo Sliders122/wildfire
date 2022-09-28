@@ -43,10 +43,10 @@ def print_raster(raster):
     """Prints the raster's metadata and shape"""
     return f"shape: {raster.rio.shape}\n resolution: {raster.rio.resolution()}\n bounds: {raster.rio.bounds()}\n sum: {raster.sum().item()}\n CRS: {raster.rio.crs}\n" 
 
-# Definition of a function to interpolate the data to a common grid
+# Definition of a function to interpolate the datasets of continuous variables to a common grid
 def interpolate_to_common_grid(dataray, common_grid):
     """Interpolates the dataray to a common grid"""
-    return dataray.rio.reproject_match(common_grid)
+    return dataray.rio.reproject_match(common_grid, resampling=rasterio.enums.Resampling.bilinear)
 
 def resample_to_daily(dataray):
     """Resamples the dataray to daily values"""
