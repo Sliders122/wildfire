@@ -83,7 +83,7 @@
 
 **Comments:** 
 * EVI and NDVI have the same range of value but the EVI is centered whereas NDVI has a left skewdistribution
-* Despite this there should be a strong correlation between these two variables.
+* Despite this there should be a strong correlation between these two variables, which is relevant.eva
 * There is almost an overlap with the quality of the data and with value around 0 for EVI and NDVI, so we need to have a closer look when preprocessing if we can take into account these value.
 * Because of the categorical value of the quality variable we can't youse bilinear or cubic interpolation, we will use nearest to keep the same catgorical value.
 * The spatial extent is already crop to the PACA extent but we do need updampling the temporal resolution
