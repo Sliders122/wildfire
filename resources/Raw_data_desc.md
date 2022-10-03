@@ -19,7 +19,7 @@
 - FparStdDev_500m
 - LaiStdDev_500m
 
-### NDVI from MOD13A2 v061([link](https://lpdaac.usgs.gov/products/mod15a2hv061/)):
+### NDVI from MOD13A2 v061([link](https://lpdaac.usgs.gov/products/mod13a2v061/)):
 
 **Start date:**  2009-12-27 00:00:00
 
