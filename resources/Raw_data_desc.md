@@ -10,6 +10,7 @@
 **Resolution:** 500m
 
 **Temporal granulometry:** 8 days
+
 **List of variables:** 
 - Fpar_500m: 
 - Lai_500m
