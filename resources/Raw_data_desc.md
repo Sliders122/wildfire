@@ -140,6 +140,45 @@ elements.
 	-max: 
     -unit: it needs to be converted into bit for interpretation
 
-**Comments**
+**Comments**: 
+
 ET is the mass of evaporated water per unit area per unit time, and LE is the latent heat flux, which is the energy flux associated with the evaporation of water. The two variables are strongly correlated, and we will keep only ET. There is no difference between the portential and actual. So we will keep only the ET_500m.
 
+
+###  Evapotranspiration. MOD16A2 v061([link](https://lpdaac.usgs.gov/products/mod16a2v061/)):
+
+**Start date:**  2010-01-01 04:00:00
+
+**End date:**  2022-07-31 20:00:00
+
+**Resolution:** 9km
+
+**Temporal granulometry:** 4 hours
+
+**List of variables:** 
+
+- u10: Eastward component of the 10m wind  *(continuous)*
+	-min: -17.09
+	-max: 15.15
+    -unit: m/s
+
+- v10:	Northward component of the 10m wind *(continuous)*
+ 	-min: -15.89
+	-max: 14.17
+    -unit: m/s
+
+
+- t2m: 	Temperature of air at 2m above the surface of land, sea or in-land waters. *The temperature measured in kelvin can be converted to degrees Celsius (°C) by subtracting 273.15*. *(continuous)*
+	-min: 244
+	-max: 317
+    -unit: K
+
+- tp: precipitation *(continuous)*
+ 	-min: 0
+	-max: 0.122
+    -unit: m
+
+
+**Comments**
+
+ET is the mass of evaporated water per unit area per unit time, and LE is the latent heat flux, which is the energy flux associated with the evaporation of water. The two variables are strongly correlated, and we will keep only ET. There is no difference between the portential and actual. So we will keep only the ET_500m.
