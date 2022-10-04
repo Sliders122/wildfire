@@ -9,6 +9,10 @@
 
 **Resolution:** 500m
 
+**Projection:**  sinusoidal
+
+**Spatial extent**: AOI
+
 **Temporal granulometry:** 8 days
 
 **List of variables:** 
@@ -71,6 +75,10 @@ elements.
 
 **Resolution:** 1000m
 
+**Projection:**  sinusoidal
+
+**Spatial extent**: AOI
+
 **Temporal granulometry:** 16 days
 
 **projection:** sinusoidal
@@ -110,6 +118,10 @@ elements.
 **End date:**  2022-08-29 00:00:00
 
 **Resolution:** 500m
+
+**Projection:**  sinusoidal
+
+**Spatial extent**: AOI
 
 **Temporal granulometry:** 8 days
 
@@ -153,6 +165,10 @@ ET is the mass of evaporated water per unit area per unit time, and LE is the la
 
 **Resolution:** 9km
 
+**Projection:**  WG84 --> EPSG 4326
+
+**Spatial extent**: larger than the AOI --> need to be clipped
+
 **Temporal granulometry:** 4 hours
 
 **List of variables:** 
@@ -182,3 +198,61 @@ ET is the mass of evaporated water per unit area per unit time, and LE is the la
 **Comments**
 
 Nothing to do with the data. However we need to project the dataset into a sinusoidal projection and clipping to the right AOI. We will aslo need to regridding to a 1km resoltuion and downsampling to a daily temporal resolution. We have to be careful and checking the dataset agin after all this transformation.
+
+
+### Land Surface Temperature. MOD11A1 variables ([link](https://lpdaac.usgs.gov/products/mod11a1v061/)):
+
+**Start date:**  2009-12-28 00:00:00
+
+**End date:**  2022-09-01 00:00:00
+
+**Resolution:** 1km
+
+**Projection:**  sinusoidal
+
+**Spatial extent**: AOI
+
+**Temporal granulometry:** daily
+
+**List of variables:** 
+
+- LST_Day_1km: Land Surface Temperature day  *(continuous)*
+	-min: 240.0
+	-max: 332.9
+    -unit: K
+
+- LST_Night_1km:Land Surface Temperature day *(continuous)*
+ 	-min: 227.3
+	-max: 321.2
+    -unit: K
+
+
+**Comments**
+Nothing to do with the data.
+
+### Fire Weather Index ([link](https://cds.climate.copernicus.eu/cdsapp#!/dataset/cems-fire-historical?tab=overview)):
+
+**Start date:**  2010-01-01 00:00:00
+
+**End date:**  2022-12-31 00:00:00
+
+**Resolution:** 0.25°
+
+**Projection:**  rotated pole
+
+**Spatial extent**: Europe
+
+**Temporal granulometry:** daily
+
+**List of variables:** 
+
+- FWI: Fire Weather Index *(continuous)*
+	-min: 1
+	-max: 473
+    -unit: dimensionless
+
+
+
+**Comments**
+need to change the extent and the projection
+
