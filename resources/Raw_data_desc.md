@@ -145,7 +145,7 @@ elements.
 ET is the mass of evaporated water per unit area per unit time, and LE is the latent heat flux, which is the energy flux associated with the evaporation of water. The two variables are strongly correlated, and we will keep only ET. There is no difference between the portential and actual. So we will keep only the ET_500m.
 
 
-###  Evapotranspiration. MOD16A2 v061([link](https://lpdaac.usgs.gov/products/mod16a2v061/)):
+###  Meteorological data. ERA5-Land variables([link](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land?tab=overview)):
 
 **Start date:**  2010-01-01 04:00:00
 
@@ -181,4 +181,4 @@ ET is the mass of evaporated water per unit area per unit time, and LE is the la
 
 **Comments**
 
-ET is the mass of evaporated water per unit area per unit time, and LE is the latent heat flux, which is the energy flux associated with the evaporation of water. The two variables are strongly correlated, and we will keep only ET. There is no difference between the portential and actual. So we will keep only the ET_500m.
+Nothing to do with the data. However we need to project the dataset into a sinusoidal projection and clipping to the right AOI. We will aslo need to regridding to a 1km resoltuion and downsampling to a daily temporal resolution. We have to be careful and checking the dataset agin after all this transformation.
