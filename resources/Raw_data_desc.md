@@ -335,33 +335,33 @@ The MYD14A2 gridded composite contains maximum value of individual fire pixel cl
 
 - **FireMask** *(categorical)*
 Value	Description
-0	Not processed (missing input data)
-1	Not processed (obsolete; not used since Collection 1)
-2	Not processed (other reason)
-3	Non-fire water pixel
-4	Cloud (land or water)
-5	Non-fire land pixel
-6	Unknown (land or water)
-7	Fire (low confidence, land or water)
-8	Fire (nominal confidence, land or water)
-9	Fire (high confidence, land or water)
+	- 0	Not processed (missing input data)
+	- 1	Not processed (obsolete; not used since Collection 1)
+	- 2	Not processed (other reason)
+	- 3	Non-fire water pixel
+	- 4	Cloud (land or water)
+	- 5	Non-fire land pixel
+	- 6	Unknown (land or water)
+	- 7	Fire (low confidence, land or water)
+	- 8	Fire (nominal confidence, land or water)
+	- 9	Fire (high confidence, land or water)
 
 - **QA**: Quality Assurance Indicators *(categorical)*
 Bit(s) Meaning
-0-1 land/water state (00 = water, 01 = coast, 10 = land, 11 = unused)
-2 3.9 µm high-gain flag (0 = band 21, 1 = band 22)
-3 atmospheric correction performed (0 = no, 1 = yes)
-4 day/night algorithm (0 = night, 1 = day)
-5 potential fire pixel (0 = false, 1 = true)
-6 spare (set to 0)
-7-10 background window size parameter
-11-16 individual detection test flags (0 = fail, 1 = pass)
-17-19 spare (set to 0)
-20 adjacent cloud pixel (0 = no, 1 = yes)
-21 adjacent water pixel (0 = no, 1 = yes)
-22-23 sun glint level (0–3)
-24-28 individual rejection test flags (0 = false, 1 = true)
-29-31 spare (set to 0)
+	- 0-1 land/water state (00 = water, 01 = coast, 10 = land, 11 = unused)
+	- 2 3.9 µm high-gain flag (0 = band 21, 1 = band 22)
+	- 3 atmospheric correction performed (0 = no, 1 = yes)
+	- 4 day/night algorithm (0 = night, 1 = day)
+	- 5 potential fire pixel (0 = false, 1 = true)
+	- 6 spare (set to 0)
+	- 7-10 background window size parameter
+	- 11-16 individual detection test flags (0 = fail, 1 = pass)
+	- 17-19 spare (set to 0)
+	- 20 adjacent cloud pixel (0 = no, 1 = yes)
+	- 21 adjacent water pixel (0 = no, 1 = yes)
+	- 22-23 sun glint level (0–3)
+	- 24-28 individual rejection test flags (0 = false, 1 = true)
+	- 29-31 spare (set to 0)
 
 ![](https://github.com/Sliders122/wildfire/blob/datacube/resources/Image/percentage_fire.png?raw=true)
 
