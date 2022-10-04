@@ -389,7 +389,7 @@ We see from the picture most of the time tere is no fire, so the final dataset m
 
 **Comments**: Need to be clipped into the AOI and project onti sinusoidal.
 
-#Conclusion
+# Conclusion
 ## Resolution
 ### Time Range
 From the various dataset we will keep the time range within we have all the variables.
