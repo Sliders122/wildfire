@@ -126,7 +126,8 @@ elements.
 **Temporal granulometry:** 8 days
 
 **List of variables:** 
--** ET_500m:** Total Evapotranspiration *(continuous)*
+
+-**ET_500m:** Total Evapotranspiration *(continuous)*
 	-min: 0
 	-max: 3.277e+03
     -unit: kg/m²/8day
@@ -388,5 +389,67 @@ We see from the picture most of the time tere is no fire, so the final dataset m
 
 **Comments**: Need to be clipped into the AOI and project onti sinusoidal.
 
-Start_date: 2010-01-01
-End_date: 2022-02-01
+#Conclusion
+## Resolution
+### Time Range
+From the various dataset we will keep the time range within we have all the variables.
+**Start date:**  2010-01-02 
+**End date:**  2022-02-01 
+
+### Time Resolution
+**Temporal granulometry:** daily as we want to predict wildfire we cannot take a wider predictions and shorter resolution would impact too much on the significance of our data.
+
+### Spatial resolution
+**Resolution:** 1km
+
+## Projection
+**Projection:**  sinusoidal.
+The sinusoidal projection is defined to keep the area, which is relevant to our objective
+
+## Area Of Interest
+
+**Spatial extent**: AOI. Defined with Google Earth with a KML and then converted into a shapefile.
+
+## Recommending variables for the datacube
+**List of variables:** 
+- **Fpar_500m:** Fraction of Photosynthetically Active Radiation (continuous)
+		min: 0	max: 2.54	unit: percentage
+- **FparStdDev_500m:** Standard deviation of FPAR (continuous)
+		min: 0 	max: 2.54 	unit: percentage
+- **_1_km_16_days_EVI:** Ehanced Vegetation Index (continuous)
+		min: -02	max: 0.8983	unit: none
+- **ET_500m:** Total Evapotranspiration *(continuous)*
+		min: 0	max: 3.277e+03	unit: kg/m²/8day
+- **u10:** Eastward component of the 10m wind  *(continuous)*
+		min: -17.09	max: 15.15	unit: m/s
+- **v10:**	Northward component of the 10m wind *(continuous)*
+		min: -15.89	max: 14.17	unit: m/s
+- **t2m:** 	Temperature of air at 2m above the surface of land, sea or in-land waters. *The temperature measured in kelvin can be converted to degrees Celsius (°C) by subtracting 273.15*. *(continuous)*
+		min: 244	max: 317	unit: K
+- **tp:** precipitation *(continuous)*
+		min: 0	max: 0.122	unit: m
+- **LST_Day_1km:** Land Surface Temperature day  *(continuous)*
+		min: 240.0	max: 332.9	unit: K
+
+- **LST_Night_1km:**Land Surface Temperature day *(continuous)*
+		min: 227.3	max: 321.2	unit: K
+- **FWI**: Fire Weather Index *(continuous)*
+		min: 1	max: 473	unit: dimensionless
+- **First_Day:** First day of the year of reliable change detection *(categorical)*
+		min: 0	max: 366	unit: day
+- **Last_Day:** Last day of the year of reliable change detection *(categorical)*
+		min: 0	max: 366	unit: day
+- **Burn_Date_Uncertainty:** Estimated uncertainty in burn day *(categorical)*
+		min: 0	max: 100	unit: day
+- **FireMask** *(categorical)*
+	- 0	Not processed (missing input data)
+	- 1	Not processed (obsolete; not used since Collection 1)
+	- 2	Not processed (other reason)
+	- 3	Non-fire water pixel
+	- 4	Cloud (land or water)
+	- 5	Non-fire land pixel
+	- 6	Unknown (land or water)
+	- 7	Fire (low confidence, land or water)
+	- 8	Fire (nominal confidence, land or water)
+	- 9	Fire (high confidence, land or water)
+- **Density** *(continuous)*
