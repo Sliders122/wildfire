@@ -34,6 +34,9 @@ if __name__ == "__main__":
     active_fire_filter = active_fire[['First_Day', 'Last_Day']]
     burn_mask_filter = burn_mask['FireMask']
 
+    # Convert era calendar to cftime.DatetimeJulian
+    era_filter = era_filter.convert_calendar('julian')
+
     # Create a CRS object from a poj4 string for sinuoidal projection
     crs_sinu = rasterio.crs.CRS.from_string(
         "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
@@ -97,6 +100,14 @@ if __name__ == "__main__":
 
     #Append the density data set to the list
     data_sets.append(density_proj)
+
+    # Rename dataArrays before merging
+    density_proj.name = 'density'
+
+    # Convert era calendar to cftime.DatetimeJulian
+    era_filter_proj = era_filter_proj.convert_calendar('julian')
+
+
 
     # Merge by coordinates the data sets
     data_merged = xr.combine_by_coords(data_sets, combine_attrs='drop_conflicts')
