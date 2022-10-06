@@ -68,38 +68,22 @@ if __name__ == "__main__":
     era_filter_daily = hz.resample_to_daily(era_filter)
     #Projection of the era into sinuoidal projection
     era_sinu = era_filter_daily.rio.reproject(crs_sinu)
-    #Fitting floats to the era data
-    era_sinu = era_sinu.assign_coords({
-        "x": era_filter_daily.x,
-        "y": era_filter_daily.y,
-    })
+
     # Renaming dimensions of era data set to match the other data sets
     #era_filter_proj = era_sinu.rename({'y': 'ydim', 'x': 'xdim'})
 
     # Regrid the era data to the common grid
     era_filter_proj = hz.interpolate_to_common_grid(era_sinu, common_grid)
-    #Fitting floats to the era data
-    era_filter_proj = era_filter_proj.assign_coords({
-        "x": era_sinu.x,
-        "y": era_sinu.y,
-    })
 
 
     #  Resample the data sets to the common grid
     lai_filter_proj = hz.interpolate_to_common_grid(lai_filter, common_grid)
 
-    #Fitting floats to the original dataset
-    lai_filter_proj = lai_filter_proj.assign_coords({
-        "x": lai_filter.x,
-        "y": lai_filter.y,
-    })
+
+
 
     evap_filter_proj = hz.interpolate_to_common_grid(evap_filter, common_grid)
-    #Fitting floats to the original dataset
-    evap_filter_proj = evap_filter_proj.assign_coords({
-        "x": evap_filter.x,
-        "y": evap_filter.y,
-    })
+
 
 
     # fwi_filter_proj = hz.interpolate_to_common_grid(fwi_filter, common_grid)
@@ -109,19 +93,12 @@ if __name__ == "__main__":
     # change density_proj to xarray dataset
     density = density.to_dataset()
     density_proj = hz.interpolate_to_common_grid(density, common_grid)
-    #Fitting floats to the original dataset
-    density_proj = density_proj.assign_coords({
-        "x": density.x,
-        "y": density.y,
-    })
+
 
     # Different method to interpolate the active fire data set
     active_fire_filter_proj = active_fire_filter.interp(ydim=ndvi["ydim"], xdim=ndvi['xdim'])
     #Fitting floats to the original dataset
-    active_fire_filter_proj = active_fire_filter_proj.assign_coords({
-        "xdim": active_fire_filter.xdim,
-        "ydim": active_fire_filter.ydim,
-    })
+
 
 
     # Resample to daily
