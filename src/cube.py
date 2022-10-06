@@ -104,8 +104,12 @@ if __name__ == "__main__":
     # Rename dataArrays before merging
     density_proj.name = 'density'
 
-    # Convert era calendar to cftime.DatetimeJulian
-    era_filter_proj = era_filter_proj.convert_calendar('julian')
+    # Renaming dimensions of era data set to match the other data sets
+    era_filter_proj = era_filter_proj.rename({'y': 'ydim', 'x': 'xdim'})
+    # Renaming dimensions of density to match the other data sets
+    density_proj = density_proj.rename({'y': 'ydim', 'x': 'xdim'})
+
+
 
 
 
