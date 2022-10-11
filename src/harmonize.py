@@ -57,6 +57,12 @@ def resample_to_daily(dataray):
     """Resamples the dataray to daily values"""
     return dataray.resample(time="1D").interpolate("linear")
 
+# Definition of a function to resample catagorical variables to daily values
+def resample_to_daily_categorical(dataray):
+    """Resamples the categorical dataray to daily values"""
+    return dataray.resample(time="1D").nearest()
+
+
 
 # # Definition of a function to check on the dataset open before combining them
 # def print_raster(raster):
