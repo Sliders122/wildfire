@@ -48,9 +48,20 @@ def interpolate_to_common_grid(dataray, common_grid):
     """Interpolates the dataray to a common grid"""
     return dataray.rio.reproject_match(common_grid, resampling=rasterio.enums.Resampling.bilinear)
 
+# Definition of a function to interpolate the datasets of categorical variables to a common grid
+def interpolate_to_common_grid_categorical(dataray, common_grid):
+    """Interpolates the categorical dataray to a common grid"""
+    return dataray.rio.reproject_match(common_grid, resampling=rasterio.enums.Resampling.mode)
+
 def resample_to_daily(dataray):
     """Resamples the dataray to daily values"""
     return dataray.resample(time="1D").interpolate("linear")
+
+# Definition of a function to resample catagorical variables to daily values
+def resample_to_daily_categorical(dataray):
+    """Resamples the categorical dataray to daily values"""
+    return dataray.resample(time="1D").nearest()
+
 
 
 # # Definition of a function to check on the dataset open before combining them

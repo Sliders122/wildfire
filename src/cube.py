@@ -31,11 +31,21 @@ if __name__ == "__main__":
     lst_night_filter = lst_night['LST_Night_1km']
     lst_day_filter = lst_day['LST_Day_1km']
     # fwi_filter = fwi['fwi-daily-proj']
-    active_fire_filter = active_fire[['First_Day', 'Last_Day']]
+    active_fire_filter = active_fire[['First_Day', 'Last_Day', 'Burn_Date']]
     burn_mask_filter = burn_mask['FireMask']
 
     # Convert era calendar to cftime.DatetimeJulian
     era_filter = era_filter.convert_calendar('julian')
+    # Subset the data sets to the same time period: 2010-01-01 to 2021-01-01
+    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    era_filter = era_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    # fwi_filter = fwi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2021-01-01'))
 
     # Create a CRS object from a poj4 string for sinuoidal projection
     crs_sinu = rasterio.crs.CRS.from_string(
@@ -54,7 +64,7 @@ if __name__ == "__main__":
     density = hz.define_crs(density, 4326)
 
     # Define the AOI
-    aoi = hz.define_area_of_interest(path_data+'AreaOfInterest.zip')
+    aoi = hz.define_area_of_interest(path_data + 'AreaOfInterest.zip')
 
     # Clip the data sets to the AOI
     era_filter = hz.clip_to_aoi(era_filter, aoi)
@@ -62,29 +72,23 @@ if __name__ == "__main__":
     density = hz.clip_to_aoi(density, aoi)
 
     #   Definition of the common grid
-    common_grid = rxr.open_rasterio(path_data+'Raw_LST_Day_1D_1km.nc').isel(time=0)
+    common_grid = rxr.open_rasterio(path_data + 'Raw_LST_Day_1D_1km.nc').isel(time=0)
 
     # Downsample the era data to a daily resolution before regridding
     era_filter_daily = hz.resample_to_daily(era_filter)
-    #Projection of the era into sinuoidal projection
+    # Projection of the era into sinuoidal projection
     era_sinu = era_filter_daily.rio.reproject(crs_sinu)
 
     # Renaming dimensions of era data set to match the other data sets
-    #era_filter_proj = era_sinu.rename({'y': 'ydim', 'x': 'xdim'})
+    # era_filter_proj = era_sinu.rename({'y': 'ydim', 'x': 'xdim'})
 
     # Regrid the era data to the common grid
     era_filter_proj = hz.interpolate_to_common_grid(era_sinu, common_grid)
 
-
     #  Resample the data sets to the common grid
     lai_filter_proj = hz.interpolate_to_common_grid(lai_filter, common_grid)
 
-
-
-
-    evap_filter_proj = hz.interpolate_to_common_grid(evap_filter, common_grid)
-
-
+    evap_filter_proj = hz.interpolate_to_common_grid_categorical(evap_filter, common_grid)
 
     # fwi_filter_proj = hz.interpolate_to_common_grid(fwi_filter, common_grid)
 
@@ -94,58 +98,46 @@ if __name__ == "__main__":
     density = density.to_dataset()
     density_proj = hz.interpolate_to_common_grid(density, common_grid)
 
-
     # Different method to interpolate the active fire data set
     active_fire_filter_proj = active_fire_filter.interp(ydim=ndvi["ydim"], xdim=ndvi['xdim'])
-    #Fitting floats to the original dataset
 
-
+    # Pre-processing before daily interpolation
+    # Deleting attribute grid_mapping of the burn_mask_filter data set
+    del burn_mask_filter.attrs['grid_mapping']
+    # Deleting attribute grid_mapping of the evap_filter_proj data set
+    del evap_filter_proj.attrs['grid_mapping']
 
     # Resample to daily
     ndvi_filter_daily = hz.resample_to_daily(ndvi_filter)
-    burn_mask_filter_daily = hz.resample_to_daily(burn_mask_filter)
+    burn_mask_filter_daily = hz.resample_to_daily_categorical(burn_mask_filter)
     lai_filter_proj_daily = hz.resample_to_daily(lai_filter_proj)
-    evap_filter_proj_daily = hz.resample_to_daily(evap_filter_proj)
+    evap_filter_proj_daily = hz.resample_to_daily_categorical(evap_filter_proj)
     # fwi_filter_proj_daily = hz.resample_to_daily(fwi_filter_proj)
     active_fire_filter_proj_daily = hz.resample_to_daily(active_fire_filter_proj)
 
     # Create a list of the data sets
-    data_sets = [ndvi_filter_daily, burn_mask_filter_daily, lai_filter_proj_daily, evap_filter_proj_daily, era_filter_proj, active_fire_filter_proj_daily]
+    data_sets = [ndvi_filter_daily, burn_mask_filter_daily, lai_filter_proj_daily, evap_filter_proj_daily,
+                 era_filter_proj, active_fire_filter_proj_daily]
 
     # Subset all dataset from the list using sel method to '2010-02-01', '2022-01-01'
-    data_sets = [ds.sel(time=slice('2010-02-01', '2022-01-01')) for ds in data_sets]
+    data_sets = [ds.sel(time=slice('2011-02-01', '2021-01-01')) for ds in data_sets]
 
-
-    # Renaming dimensions of density to match the other data sets
-    #density_proj = density_proj.rename({'y': 'ydim', 'x': 'xdim'})
-
-    #Append the density data set to the list
     # Create a first list with coordinate x and y
     list_xy = [lai_filter_proj_daily, evap_filter_proj_daily, era_filter_proj, density_proj]
     list_xdimydim = [ndvi_filter_daily, burn_mask_filter_daily, active_fire_filter_proj_daily]
 
     # Merge and save by coordinates the data sets from the lists
-    xr.combine_by_coords(list_xy, combine_attrs='drop_conflicts').to_netcdf(path_data+'list_xy.nc')
-    xr.combine_by_coords(list_xdimydim, combine_attrs='drop_conflicts').to_netcdf(path_data+'list_xdimydim.nc')
+    ds_xy = xr.combine_by_coords(list_xy, combine_attrs='drop_conflicts')
+    ds_xdimydim = xr.combine_by_coords(list_xdimydim, combine_attrs='drop_conflicts')
 
+    # Match the coordinates values of the data sets
+    ds_xdimydim_xdimydim = ds_xdimydim.assign_coords(xdim=ds_xy.coords['x'].values, ydim=ds_xy.coords['y'].values)
 
+    # Renaming the coordinates of the data sets to match the other data sets
+    ds_xdimydim_xdimydim = ds_xdimydim_xdimydim.rename({'xdim': 'x', 'ydim': 'y'})
 
-
-    # Merge by coordinates the data sets
-    #data_merged = xr.combine_by_coords(data_sets, combine_attrs='drop_conflicts')
-    #data_merged = xr.combine_by_coords(data_sets, combine_attrs='drop_conflicts')
+    # Merge the data sets
+    ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
 
     # Save the data set
-    #data_merged.to_netcdf(path_data + 'data_merged_semi.nc')
-    #era_filter_proj.to_netcdf(path_data + 'weather.nc')
-    #density_proj.to_netcdf(path_data + 'density.nc')
-
-
-
-
-
-
-
-
-
-
+    ds.to_netcdf(path_data + 'datacube1.nc')
