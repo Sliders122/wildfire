@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
 
 
-    evap_filter_proj = hz.interpolate_to_common_grid(evap_filter, common_grid)
+    evap_filter_proj = hz.interpolate_to_common_grid_categorical(evap_filter, common_grid)
 
 
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     ndvi_filter_daily = hz.resample_to_daily(ndvi_filter)
     burn_mask_filter_daily = hz.resample_to_daily_categorical(burn_mask_filter)
     lai_filter_proj_daily = hz.resample_to_daily(lai_filter_proj)
-    evap_filter_proj_daily = hz.resample_to_daily(evap_filter_proj)
+    evap_filter_proj_daily = hz.resample_to_daily_categorical(evap_filter_proj)
     # fwi_filter_proj_daily = hz.resample_to_daily(fwi_filter_proj)
     active_fire_filter_proj_daily = hz.resample_to_daily(active_fire_filter_proj)
 
