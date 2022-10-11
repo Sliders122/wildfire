@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     # Resample to daily
     ndvi_filter_daily = hz.resample_to_daily(ndvi_filter)
-    burn_mask_filter_daily = hz.resample_to_daily(burn_mask_filter)
+    burn_mask_filter_daily = hz.resample_to_daily_categorical(burn_mask_filter)
     lai_filter_proj_daily = hz.resample_to_daily(lai_filter_proj)
     evap_filter_proj_daily = hz.resample_to_daily(evap_filter_proj)
     # fwi_filter_proj_daily = hz.resample_to_daily(fwi_filter_proj)
