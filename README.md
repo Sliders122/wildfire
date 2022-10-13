@@ -14,22 +14,35 @@ Depending on what you are making, it can be a good idea to include screenshots o
 
 ## Installation
 One difficulties of the project is to manage the depedencies. We work under a windows OS, with python 3.9 +.
-To manage the dependencies it is recommanded to use a conda environement and use conda forge in first choice.
+To manage the dependencies it is recommanded to use a conda environement and use conda forge in first choice. The advantage of using the conda package manager is that it provides pre-built binaries for all the required and optional dependencies for Rasterio, Xarray and geopandas.
 
 First add `conda-forge` to your channels with:
 ```
 copy conda config --add channels conda-forge
 copy conda config --set channel_priority strict
 ```
+### Rasterio 
+[(more info here)](https://github.com/conda-forge/rasterio-feedstock#installing-rasterio)
+
+
 Once the `conda-forge` channel has been enabled, `rasterio` can be installed with `conda`:
 ```
 conda install rasterio
 ```
 
- Xarray Installation [(more info here)](https://docs.xarray.dev/en/stable/getting-started-guide/installing.html) if you haven't set conda forge as a priority channel, you can still mention it excplicitly
+### Xarray
+
+Xarray Installation [(more info here)](https://docs.xarray.dev/en/stable/getting-started-guide/installing.html) if you haven't set conda forge as a priority channel, you can still mention it excplicitly
 ```
 conda install -c conda-forge xarray dask netCDF4 bottleneck`
 ````
+
+### Geopandas
+[(more info here)](https://geopandas.org/en/stable/getting_started/install.html)
+```
+conda install --channel conda-forge geopandas
+```
+
 
 ## Usage
 Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
