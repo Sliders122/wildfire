@@ -1,4 +1,4 @@
-# FireProject
+# WildFire Forecast
 
 ## Name
 WildFire forecast
