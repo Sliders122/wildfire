@@ -16,6 +16,7 @@ Depending on what you are making, it can be a good idea to include screenshots o
 One difficulties of the project is to manage the depedencies. We work under a windows OS, with python 3.9 +.
 To manage the dependencies it is recommanded to use a conda environement and use conda forge in first choice.
 - Xarray Installation [(more info here)](https://docs.xarray.dev/en/stable/getting-started-guide/installing.html)
+-
 `conda install -c conda-forge xarray dask netCDF4 bottleneck`
 
 ## Usage
