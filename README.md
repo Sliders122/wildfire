@@ -1,7 +1,7 @@
 # FireProject
 
 ## Name
-FireProject
+WildFire forecast
 
 ## Description
 The aim of this project is to create an Artificial Inteligence Model that will be able to predict fire in the PACA (France) region
