@@ -124,7 +124,7 @@ if __name__ == "__main__":
 
     # Create a first list with coordinate x and y
     list_xy = [lai_filter_proj_daily, evap_filter_proj_daily, era_filter_proj, density_proj]
-    list_xdimydim = [ndvi_filter_daily, burn_mask_filter_daily, active_fire_filter_proj_daily]
+    list_xdimydim = [ndvi_filter_daily, burn_mask_filter_daily, active_fire_filter_proj_daily, lst_night_filter, lst_day_filter]
 
     # Merge and save by coordinates the data sets from the lists
     ds_xy = xr.combine_by_coords(list_xy, combine_attrs='drop_conflicts')
