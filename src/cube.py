@@ -37,15 +37,32 @@ if __name__ == "__main__":
     # Convert era calendar to cftime.DatetimeJulian
     era_filter = era_filter.convert_calendar('julian')
     # Subset the data sets to the same time period: 2010-01-01 to 2021-01-01
-    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    era_filter = era_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    era_filter = era_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2021-01-01'))
     # fwi_filter = fwi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+
+    # Filling the missing values
+    #Filling missing values of lst_day and lst_night with xr.interpolate_na method with a quadratic method
+    lst_day_filter = lst_day_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(dim='ydim')
+    lst_night_filter = lst_night_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(dim='ydim')
+
+
+
+    # Filling with ffill method
+    ndvi_filter = ndvi_filter.ffill(dim='time').ffill(dim='xdim').ffill(dim='ydim')
+    lai_filter = lai_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    evap_filter = evap_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    # fwi_filter = fwi_filter.ffill(dim='xdim').ffill(dim='ydim')
+    active_fire_filter = active_fire_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    burn_mask_filter = burn_mask_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    #density = density.ffill(dim='x', limit=None).ffill(dim='y', limit=None)
+
 
     # Create a CRS object from a poj4 string for sinuoidal projection
     crs_sinu = rasterio.crs.CRS.from_string(
@@ -71,11 +88,18 @@ if __name__ == "__main__":
     # fwi_filter = hz.clip_to_aoi(fwi_filter, aoi)
     density = hz.clip_to_aoi(density, aoi)
 
+    # Forwards fill the missing values of the clipped data sets
+    era_filter = era_filter.ffill(dim='time').ffill(dim='xdim').ffill(dim='ydim')
+    density = density.ffill(dim='x', limit=None).ffill(dim='y', limit=None)
+
     #   Definition of the common grid
     common_grid = rxr.open_rasterio(path_data + 'final_lst_day_1D_1km.nc').isel(time=0)
 
     # Downsample the era data to a daily resolution before regridding
     era_filter_daily = hz.resample_to_daily(era_filter)
+
+
+
     # Projection of the era into sinuoidal projection
     era_sinu = era_filter_daily.rio.reproject(crs_sinu)
 
@@ -152,5 +176,10 @@ if __name__ == "__main__":
     # Merge the data sets
     ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
 
+
+
+
+
+
     # Save the data set
-    ds.to_netcdf(path_data + 'datacube2.nc')
+    ds.to_netcdf(path_data + 'datacube.nc')
