@@ -88,7 +88,7 @@ if __name__ == "__main__":
     #  Resample the data sets to the common grid
     lai_filter_proj = hz.interpolate_to_common_grid(lai_filter, common_grid)
 
-    # evap_filter_proj = hz.interpolate_to_common_grid_categorical(evap_filter, common_grid)
+    evap_filter_proj = hz.interpolate_to_common_grid_categorical(evap_filter, common_grid)
 
     # fwi_filter_proj = hz.interpolate_to_common_grid(fwi_filter, common_grid)
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     # Deleting attribute grid_mapping of the burn_mask_filter data set
     del burn_mask_filter.attrs['grid_mapping']
     # Deleting attribute grid_mapping of the evap_filter_proj data set
-    # del evap_filter_proj.attrs['grid_mapping']
+    del evap_filter_proj.attrs['grid_mapping']
     # Deleting attribute grid_mapping of the lst_night_filter data set
     del lst_night_filter.attrs['grid_mapping']
     # Deleting attribute grid_mapping of the lst_day_filter data set
@@ -115,12 +115,12 @@ if __name__ == "__main__":
     ndvi_filter_daily = hz.resample_to_daily(ndvi_filter)
     burn_mask_filter_daily = hz.resample_to_daily_categorical(burn_mask_filter)
     lai_filter_proj_daily = hz.resample_to_daily(lai_filter_proj)
-    # evap_filter_proj_daily = hz.resample_to_daily_categorical(evap_filter_proj)
+    evap_filter_proj_daily = hz.resample_to_daily_categorical(evap_filter_proj)
     # fwi_filter_proj_daily = hz.resample_to_daily(fwi_filter_proj)
     active_fire_filter_proj_daily = hz.resample_to_daily(active_fire_filter_proj)
 
     # Create a list of the data sets
-    data_sets = [ndvi_filter_daily, burn_mask_filter_daily, lai_filter_proj_daily, #evap_filter_proj_daily,
+    data_sets = [ndvi_filter_daily, burn_mask_filter_daily, lai_filter_proj_daily, evap_filter_proj_daily,
                  era_filter_proj, active_fire_filter_proj_daily]
 
     # Subset all dataset from the list using sel method to '2010-02-01', '2022-01-01'
@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     # Create a first list with coordinate x and y
     list_xy = [lai_filter_proj_daily,
-               # evap_filter_proj_daily,
+               evap_filter_proj_daily,
                era_filter_proj,
                density_proj]
 
