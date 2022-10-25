@@ -9,17 +9,17 @@ from shapely.geometry import mapping
 
 if __name__ == "__main__":
     # Create a path to the data directory
-    path_data = "../data/Raw/"
+    path_data = "../data/final/"
 
     # Load the data set
-    ndvi = xr.open_dataset(path_data + 'Raw_NDVI_16D_1km.nc')
-    lai = xr.open_dataset(path_data + 'Raw_LAI_8D_500m.nc')
-    evap = xr.open_dataset(path_data + 'Raw_Evap_8D_500m.nc')
+    ndvi = xr.open_dataset(path_data + 'final_ndvi_16D_1km.nc')
+    lai = xr.open_dataset(path_data + 'final_lai_8D_500m.nc')
+    evap = xr.open_dataset(path_data + 'final_evap_8D_500m.nc')
     era = xr.open_dataset(path_data + 'Raw_weather_4H_9km.nc')
-    lst_night = xr.open_dataset(path_data + 'Raw_LST_Night_1D_1km.nc')
-    lst_day = xr.open_dataset(path_data + 'Raw_LST_Day_1D_1km.nc')
-    active_fire = xr.open_dataset(path_data + 'Raw_ActiveFire_500m.nc')
-    burn_mask = xr.open_dataset(path_data + 'Raw_BurnMask_1km.nc')
+    lst_night = xr.open_dataset(path_data + 'final_lst_night_1D_1km.nc')
+    lst_day = xr.open_dataset(path_data + 'final_lst_day_1D_1km.nc')
+    active_fire = xr.open_dataset(path_data + 'final_active_fire_1M_500m.nc')
+    burn_mask = xr.open_dataset(path_data + 'final_fire_mask_1M_1km.nc')
     fwi = xr.open_mfdataset(path_data + '/Raw_Fwi/*.nc', combine='by_coords', chunks=None)
     density = rxr.open_rasterio(path_data + 'fra_pd_2015_1km_UNadj.tif', masked=True).squeeze()
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     density = hz.define_crs(density, 4326)
 
     # Define the AOI
-    aoi = hz.define_area_of_interest(path_data + 'AreaOfInterest.zip')
+    aoi = hz.define_area_of_interest(path_data + 'Large.zip')
 
     # Clip the data sets to the AOI
     era_filter = hz.clip_to_aoi(era_filter, aoi)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     density = hz.clip_to_aoi(density, aoi)
 
     #   Definition of the common grid
-    common_grid = rxr.open_rasterio(path_data + 'Raw_LST_Day_1D_1km.nc').isel(time=0)
+    common_grid = rxr.open_rasterio(path_data + 'final_lst_day_1D_1km.nc').isel(time=0)
 
     # Downsample the era data to a daily resolution before regridding
     era_filter_daily = hz.resample_to_daily(era_filter)
@@ -123,8 +123,17 @@ if __name__ == "__main__":
     data_sets = [ds.sel(time=slice('2011-02-01', '2021-01-01')) for ds in data_sets]
 
     # Create a first list with coordinate x and y
-    list_xy = [lai_filter_proj_daily, evap_filter_proj_daily, era_filter_proj, density_proj]
-    list_xdimydim = [ndvi_filter_daily, burn_mask_filter_daily, active_fire_filter_proj_daily, lst_night_filter, lst_day_filter]
+    list_xy = [lai_filter_proj_daily,
+               evap_filter_proj_daily,
+               era_filter_proj,
+               density_proj]
+
+    # Create a second list with coordinate xdim and ydim
+    list_xdimydim = [ndvi_filter_daily,
+                     burn_mask_filter_daily,
+                     active_fire_filter_proj_daily,
+                     lst_night_filter,
+                     lst_day_filter]
 
     # Merge and save by coordinates the data sets from the lists
     ds_xy = xr.combine_by_coords(list_xy, combine_attrs='drop_conflicts')
@@ -140,4 +149,4 @@ if __name__ == "__main__":
     ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
 
     # Save the data set
-    ds.to_netcdf(path_data + 'datacube1.nc')
+    ds.to_netcdf(path_data + 'datacube.nc')
