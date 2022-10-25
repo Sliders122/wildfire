@@ -140,13 +140,13 @@ if __name__ == "__main__":
     ds_xdimydim = xr.combine_by_coords(list_xdimydim, combine_attrs='drop_conflicts')
 
     # Match the coordinates values of the data sets
-    ds_xdimydim_xdimydim = ds_xdimydim.assign_coords(xdim=ds_xy.coords['x'].values, ydim=ds_xy.coords['y'].values)
+    ds_xdimydim.assign_coords(xdim=ds_xy.coords['x'].values, ydim=ds_xy.coords['y'].values)
 
     # Renaming the coordinates of the data sets to match the other data sets
-    ds_xdimydim_xdimydim = ds_xdimydim_xdimydim.rename({'xdim': 'x', 'ydim': 'y'})
+    ds_xdimydim.rename({'xdim': 'x', 'ydim': 'y'})
 
     # Merge the data sets
-    ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
+    ds = xr.merge([ds_xy, ds_xdimydim])
 
     # Save the data set
     ds.to_netcdf(path_data + 'datacube.nc')
