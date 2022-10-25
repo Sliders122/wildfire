@@ -37,15 +37,15 @@ if __name__ == "__main__":
     # Convert era calendar to cftime.DatetimeJulian
     era_filter = era_filter.convert_calendar('julian')
     # Subset the data sets to the same time period: 2010-01-01 to 2021-01-01
-    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    era_filter = era_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    era_filter = era_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2011-01-01'))
     # fwi_filter = fwi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2011-01-01'))
 
     # Create a CRS object from a poj4 string for sinuoidal projection
     crs_sinu = rasterio.crs.CRS.from_string(
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     #  Resample the data sets to the common grid
     lai_filter_proj = hz.interpolate_to_common_grid(lai_filter, common_grid)
 
-    evap_filter_proj = hz.interpolate_to_common_grid_categorical(evap_filter, common_grid)
+    # evap_filter_proj = hz.interpolate_to_common_grid_categorical(evap_filter, common_grid)
 
     # fwi_filter_proj = hz.interpolate_to_common_grid(fwi_filter, common_grid)
 
@@ -105,18 +105,22 @@ if __name__ == "__main__":
     # Deleting attribute grid_mapping of the burn_mask_filter data set
     del burn_mask_filter.attrs['grid_mapping']
     # Deleting attribute grid_mapping of the evap_filter_proj data set
-    del evap_filter_proj.attrs['grid_mapping']
+    # del evap_filter_proj.attrs['grid_mapping']
+    # Deleting attribute grid_mapping of the lst_night_filter data set
+    del lst_night_filter.attrs['grid_mapping']
+    # Deleting attribute grid_mapping of the lst_day_filter data set
+    del lst_day_filter.attrs['grid_mapping']
 
     # Resample to daily
     ndvi_filter_daily = hz.resample_to_daily(ndvi_filter)
     burn_mask_filter_daily = hz.resample_to_daily_categorical(burn_mask_filter)
     lai_filter_proj_daily = hz.resample_to_daily(lai_filter_proj)
-    evap_filter_proj_daily = hz.resample_to_daily_categorical(evap_filter_proj)
+    # evap_filter_proj_daily = hz.resample_to_daily_categorical(evap_filter_proj)
     # fwi_filter_proj_daily = hz.resample_to_daily(fwi_filter_proj)
     active_fire_filter_proj_daily = hz.resample_to_daily(active_fire_filter_proj)
 
     # Create a list of the data sets
-    data_sets = [ndvi_filter_daily, burn_mask_filter_daily, lai_filter_proj_daily, evap_filter_proj_daily,
+    data_sets = [ndvi_filter_daily, burn_mask_filter_daily, lai_filter_proj_daily, #evap_filter_proj_daily,
                  era_filter_proj, active_fire_filter_proj_daily]
 
     # Subset all dataset from the list using sel method to '2010-02-01', '2022-01-01'
@@ -124,7 +128,7 @@ if __name__ == "__main__":
 
     # Create a first list with coordinate x and y
     list_xy = [lai_filter_proj_daily,
-               evap_filter_proj_daily,
+               # evap_filter_proj_daily,
                era_filter_proj,
                density_proj]
 
@@ -133,8 +137,7 @@ if __name__ == "__main__":
                      burn_mask_filter_daily,
                      active_fire_filter_proj_daily,
                      lst_night_filter,
-                     lst_day_filter
-                     ]
+                     lst_day_filter]
 
     # Merge and save by coordinates the data sets from the lists
     ds_xy = xr.combine_by_coords(list_xy, combine_attrs='drop_conflicts')
@@ -150,4 +153,4 @@ if __name__ == "__main__":
     ds = xr.merge([ds_xy, ds_xdimydim])
 
     # Save the data set
-    ds.to_netcdf(path_data + 'datacube.nc')
+    ds.to_netcdf(path_data + 'datacube2.nc')
