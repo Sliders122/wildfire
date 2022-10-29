@@ -9,17 +9,17 @@ from shapely.geometry import mapping
 
 if __name__ == "__main__":
     # Create a path to the data directory
-    path_data = "../data/Raw/"
+    path_data = "../data/final/"
 
     # Load the data set
-    ndvi = xr.open_dataset(path_data + 'Raw_NDVI_16D_1km.nc')
-    lai = xr.open_dataset(path_data + 'Raw_LAI_8D_500m.nc')
-    evap = xr.open_dataset(path_data + 'Raw_Evap_8D_500m.nc')
+    ndvi = xr.open_dataset(path_data + 'final_ndvi_16D_1km.nc')
+    lai = xr.open_dataset(path_data + 'final_lai_8D_500m.nc')
+    evap = xr.open_dataset(path_data + 'final_evap_8D_500m.nc')
     era = xr.open_dataset(path_data + 'Raw_weather_4H_9km.nc')
-    lst_night = xr.open_dataset(path_data + 'Raw_LST_Night_1D_1km.nc')
-    lst_day = xr.open_dataset(path_data + 'Raw_LST_Day_1D_1km.nc')
-    active_fire = xr.open_dataset(path_data + 'Raw_ActiveFire_500m.nc')
-    burn_mask = xr.open_dataset(path_data + 'Raw_BurnMask_1km.nc')
+    lst_night = xr.open_dataset(path_data + 'final_lst_night_1D_1km.nc')
+    lst_day = xr.open_dataset(path_data + 'final_lst_day_1D_1km.nc')
+    active_fire = xr.open_dataset(path_data + 'final_active_fire_1M_500m.nc')
+    burn_mask = xr.open_dataset(path_data + 'final_fire_mask_1M_1km.nc')
     fwi = xr.open_mfdataset(path_data + '/Raw_Fwi/*.nc', combine='by_coords', chunks=None)
     density = rxr.open_rasterio(path_data + 'fra_pd_2015_1km_UNadj.tif', masked=True).squeeze()
 
@@ -47,6 +47,23 @@ if __name__ == "__main__":
     active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2021-01-01'))
     burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2021-01-01'))
 
+    # Filling the missing values
+    #Filling missing values of lst_day and lst_night with xr.interpolate_na method with a quadratic method
+    lst_day_filter = lst_day_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(dim='ydim')
+    lst_night_filter = lst_night_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(dim='ydim')
+
+
+
+    # Filling with ffill method
+    ndvi_filter = ndvi_filter.ffill(dim='time').ffill(dim='xdim').ffill(dim='ydim')
+    lai_filter = lai_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    evap_filter = evap_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    # fwi_filter = fwi_filter.ffill(dim='xdim').ffill(dim='ydim')
+    active_fire_filter = active_fire_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    burn_mask_filter = burn_mask_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
+    #density = density.ffill(dim='x', limit=None).ffill(dim='y', limit=None)
+
+
     # Create a CRS object from a poj4 string for sinuoidal projection
     crs_sinu = rasterio.crs.CRS.from_string(
         "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
@@ -64,18 +81,25 @@ if __name__ == "__main__":
     density = hz.define_crs(density, 4326)
 
     # Define the AOI
-    aoi = hz.define_area_of_interest(path_data + 'AreaOfInterest.zip')
+    aoi = hz.define_area_of_interest(path_data + 'Large.zip')
 
     # Clip the data sets to the AOI
     era_filter = hz.clip_to_aoi(era_filter, aoi)
     # fwi_filter = hz.clip_to_aoi(fwi_filter, aoi)
     density = hz.clip_to_aoi(density, aoi)
 
+    # Forwards fill the missing values of the clipped data sets
+    era_filter = era_filter.ffill(dim='time').ffill(dim='xdim').ffill(dim='ydim')
+    density = density.ffill(dim='x', limit=None).ffill(dim='y', limit=None)
+
     #   Definition of the common grid
-    common_grid = rxr.open_rasterio(path_data + 'Raw_LST_Day_1D_1km.nc').isel(time=0)
+    common_grid = rxr.open_rasterio(path_data + 'final_lst_day_1D_1km.nc').isel(time=0)
 
     # Downsample the era data to a daily resolution before regridding
     era_filter_daily = hz.resample_to_daily(era_filter)
+
+
+
     # Projection of the era into sinuoidal projection
     era_sinu = era_filter_daily.rio.reproject(crs_sinu)
 
@@ -106,6 +130,10 @@ if __name__ == "__main__":
     del burn_mask_filter.attrs['grid_mapping']
     # Deleting attribute grid_mapping of the evap_filter_proj data set
     del evap_filter_proj.attrs['grid_mapping']
+    # Deleting attribute grid_mapping of the lst_night_filter data set
+    del lst_night_filter.attrs['grid_mapping']
+    # Deleting attribute grid_mapping of the lst_day_filter data set
+    del lst_day_filter.attrs['grid_mapping']
 
     # Resample to daily
     ndvi_filter_daily = hz.resample_to_daily(ndvi_filter)
@@ -123,21 +151,35 @@ if __name__ == "__main__":
     data_sets = [ds.sel(time=slice('2011-02-01', '2021-01-01')) for ds in data_sets]
 
     # Create a first list with coordinate x and y
-    list_xy = [lai_filter_proj_daily, evap_filter_proj_daily, era_filter_proj, density_proj]
-    list_xdimydim = [ndvi_filter_daily, burn_mask_filter_daily, active_fire_filter_proj_daily]
+    list_xy = [lai_filter_proj_daily,
+               evap_filter_proj_daily,
+               era_filter_proj,
+               density_proj]
+
+    # Create a second list with coordinate xdim and ydim
+    list_xdimydim = [ndvi_filter_daily,
+                     burn_mask_filter_daily,
+                     active_fire_filter_proj_daily,
+                     lst_night_filter,
+                     lst_day_filter]
 
     # Merge and save by coordinates the data sets from the lists
     ds_xy = xr.combine_by_coords(list_xy, combine_attrs='drop_conflicts')
     ds_xdimydim = xr.combine_by_coords(list_xdimydim, combine_attrs='drop_conflicts')
 
     # Match the coordinates values of the data sets
-    ds_xdimydim_xdimydim = ds_xdimydim.assign_coords(xdim=ds_xy.coords['x'].values, ydim=ds_xy.coords['y'].values)
+    ds_xdimydim_xdimydim= ds_xdimydim.assign_coords(xdim=ds_xy.coords['x'].values, ydim=ds_xy.coords['y'].values)
 
     # Renaming the coordinates of the data sets to match the other data sets
-    ds_xdimydim_xdimydim = ds_xdimydim_xdimydim.rename({'xdim': 'x', 'ydim': 'y'})
+    ds_xdimydim_xdimydim= ds_xdimydim_xdimydim.rename({'xdim': 'x', 'ydim': 'y'})
 
     # Merge the data sets
     ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
 
+
+
+
+
+
     # Save the data set
-    ds.to_netcdf(path_data + 'datacube1.nc')
+    ds.to_netcdf(path_data + 'datacube.nc')
