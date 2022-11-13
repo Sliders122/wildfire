@@ -17,9 +17,9 @@ if __name__ == "__main__":
     datacube = datacube.sel(time=datacube['time.month'].isin([6, 7, 8]))
 
     # Subset for training
-    datacube_train = datacube.sel(time=slice('2010-01-01', '2016-12-31'))
+    datacube_train = datacube.sel(time=slice('2010-01-01', '2019-12-31'))
     # Subset for testing
-    datacube_test = datacube.sel(time=slice('2017-01-01', '2021-01-01'))
+    datacube_test = datacube.sel(time=slice('2020-01-01', '2021-01-01'))
 
     # To dataframe
     df_train = datacube_train.to_dataframe()
