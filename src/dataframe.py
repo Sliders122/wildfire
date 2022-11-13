@@ -14,7 +14,7 @@ if __name__ == "__main__":
     datacube = xr.open_dataset(path_data + 'datacube.nc')
 
     # Subset only for the month june, July, August of each year
-    datacube = datacube.sel(time=datacube['time.month'].isin([6, 7, 8]))
+    #datacube = datacube.sel(time=datacube['time.month'].isin([6, 7, 8]))
 
     # Subset for training
     datacube_train = datacube.sel(time=slice('2010-01-01', '2019-12-31'))
@@ -29,7 +29,8 @@ if __name__ == "__main__":
     df_train = df_train.drop(columns=['crs', 'band', 'spatial_ref'])
     df_test = df_test.drop(columns=['crs', 'band', 'spatial_ref'])
 
-    # Remove the NaN values
+    # Remove the NaN values except for the first_day column, last_day column and the burn_date column
+
     df_train = df_train.dropna()
     df_test = df_test.dropna()
 
@@ -51,9 +52,9 @@ if __name__ == "__main__":
 
     # Keep all the observations with FireMask = 1 and keep 'fire_count' observations with FireMask = 0 randomly
     df_train_balanced = df_train[df_train['FireMask'] == 1].append(
-        df_train[df_train['FireMask'] == 0].sample(n=num_fires_train, random_state=1))
+        df_train[df_train['FireMask'] == 0].sample(n=2*num_fires_train, random_state=1))
     df_test_balanced = df_test[df_test['FireMask'] == 1].append(
-        df_test[df_test['FireMask'] == 0].sample(n=num_fires_test, random_state=1))
+        df_test[df_test['FireMask'] == 0].sample(n=2*num_fires_test, random_state=1))
 
     # Save the dataframes df_train_balanced and df_test_balanced, df_test as csv files
     df_train_balanced.to_csv(path_data + 'df_train_balanced.csv')
