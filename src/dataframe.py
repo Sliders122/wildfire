@@ -14,7 +14,7 @@ if __name__ == "__main__":
     datacube = xr.open_dataset(path_data + 'datacube.nc')
 
     # Subset only for the month june, July, August of each year
-    #datacube = datacube.sel(time=datacube['time.month'].isin([6, 7, 8]))
+    datacube = datacube.sel(time=datacube['time.month'].isin([4,5,6, 7, 8,9,10]))
 
     # Subset for training
     datacube_train = datacube.sel(time=slice('2010-01-01', '2019-12-31'))
