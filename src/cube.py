@@ -176,10 +176,10 @@ if __name__ == "__main__":
     # Merge the data sets
     ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
 
-
-
-
+    # Projection of ds into WGS84
+    ds_gps = ds.rio.reproject("EPSG:4326")
 
 
     # Save the data set
-    ds.to_netcdf(path_data + 'datacube.nc')
+    #ds.to_netcdf(path_data + 'datacube.nc')
+    ds_gps.to_netcdf(path_data + 'datacube_gps.nc')
