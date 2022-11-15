@@ -37,15 +37,15 @@ if __name__ == "__main__":
     # Convert era calendar to cftime.DatetimeJulian
     era_filter = era_filter.convert_calendar('julian')
     # Subset the data sets to the same time period: 2010-01-01 to 2021-01-01
-    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    era_filter = era_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    era_filter = era_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2021-01-01'))
     # fwi_filter = fwi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
-    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2021-01-01'))
 
     # Filling the missing values
     #Filling missing values of lst_day and lst_night with xr.interpolate_na method with a quadratic method
@@ -94,6 +94,12 @@ if __name__ == "__main__":
 
     #   Definition of the common grid
     common_grid = rxr.open_rasterio(path_data + 'final_lst_day_1D_1km.nc').isel(time=0)
+    #common_grid = ndvi_filter
+    # Projection of the common_grid into WGS84
+    #common_grid = common_grid.rio.reproject("EPSG:4326",  grid_mapping_name='latitude_longitude')
+
+
+    #ds_gps = ds.rio.reproject("EPSG:4326",  grid_mapping_name='latitude_longitude')
 
     # Downsample the era data to a daily resolution before regridding
     era_filter_daily = hz.resample_to_daily(era_filter)
@@ -104,10 +110,13 @@ if __name__ == "__main__":
     era_sinu = era_filter_daily.rio.reproject(crs_sinu)
 
     # Renaming dimensions of era data set to match the other data sets
-    # era_filter_proj = era_sinu.rename({'y': 'ydim', 'x': 'xdim'})
+    era_filter_proj = era_sinu.rename({'y': 'ydim', 'x': 'xdim'})
+    #era_filter_daily = era_filter_daily.rename({'latitude': 'y', 'longitude': 'x'})
 
     # Regrid the era data to the common grid
     era_filter_proj = hz.interpolate_to_common_grid(era_sinu, common_grid)
+    #era_filter_proj = hz.interpolate_to_common_grid(era_filter_daily, common_grid)
+
 
     #  Resample the data sets to the common grid
     lai_filter_proj = hz.interpolate_to_common_grid(lai_filter, common_grid)
@@ -124,6 +133,7 @@ if __name__ == "__main__":
 
     # Different method to interpolate the active fire data set
     active_fire_filter_proj = active_fire_filter.interp(ydim=ndvi["ydim"], xdim=ndvi['xdim'])
+    #active_fire_filter_proj = active_fire_filter.interp(ydim=common_grid["y"], xdim=common_grid['x'])
 
     # Pre-processing before daily interpolation
     # Deleting attribute grid_mapping of the burn_mask_filter data set
@@ -181,13 +191,14 @@ if __name__ == "__main__":
 
     # Merge the data sets
     ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
+    #ds_gps = xr.merge([ds_xy, ds_xdimydim_xdimydim])
 
 
 
     # Projection of ds into WGS84
     ds_gps = ds.rio.reproject("EPSG:4326",  grid_mapping_name='latitude_longitude')
 
-#Delet attribute for F_par and varaibles from active fire, otherwise it cannot be saved into a netcdf file
+#Delete attribute for F_par and varaibles from active fire, otherwise it cannot be saved into a netcdf file
     # Deleting attribute grid_mapping of the ds_gps data set , variable 'Fpar_500m'
     del ds_gps['Fpar_500m'].attrs['grid_mapping']
     # Deleting attribute grid_mapping of the ds_gps data set , variable 'First_Day'
