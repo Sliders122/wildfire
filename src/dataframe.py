@@ -11,15 +11,15 @@ if __name__ == "__main__":
     path_data = "../data/final/"
 
     # Load the data set
-    datacube = xr.open_dataset(path_data + 'datacube.nc')
+    datacube = xr.open_dataset(path_data + 'datacube_gps.nc')
 
     # Subset only for the month june, July, August of each year
     datacube = datacube.sel(time=datacube['time.month'].isin([4,5,6, 7, 8,9,10]))
 
     # Subset for training
-    datacube_train = datacube.sel(time=slice('2010-01-01', '2019-12-31'))
+    datacube_train = datacube.sel(time=slice('2010-01-01', '2017-12-31'))
     # Subset for testing
-    datacube_test = datacube.sel(time=slice('2020-01-01', '2021-01-01'))
+    datacube_test = datacube.sel(time=slice('2018-01-01', '2021-01-01'))
 
     # To dataframe
     df_train = datacube_train.to_dataframe()
@@ -51,12 +51,12 @@ if __name__ == "__main__":
 
 
     # Keep all the observations with FireMask = 1 and keep 'fire_count' observations with FireMask = 0 randomly
-    df_train_balanced = df_train[df_train['FireMask'] == 1].append(
-        df_train[df_train['FireMask'] == 0].sample(n=2*num_fires_train, random_state=1))
-    df_test_balanced = df_test[df_test['FireMask'] == 1].append(
-        df_test[df_test['FireMask'] == 0].sample(n=2*num_fires_test, random_state=1))
+    df_train_balanced_gps = df_train[df_train['FireMask'] == 1].append(
+        df_train[df_train['FireMask'] == 0].sample(n=(2*num_fires_train), random_state=1))
+    df_test_balanced_gps = df_test[df_test['FireMask'] == 1].append(
+        df_test[df_test['FireMask'] == 0].sample(n=(2*num_fires_test), random_state=1))
 
     # Save the dataframes df_train_balanced and df_test_balanced, df_test as csv files
-    df_train_balanced.to_csv(path_data + 'df_train_balanced.csv')
-    df_test_balanced.to_csv(path_data + 'df_test_balanced.csv')
-    df_test.to_csv(path_data + 'df_test_imbalanced.csv')
+    df_train_balanced_gps.to_csv(path_data + 'df_train_balanced.csv')
+    df_test_balanced_gps.to_csv(path_data + 'df_test_balanced.csv')
+    #df_test.to_csv(path_data + 'df_test_imbalanced.csv')
