@@ -143,7 +143,7 @@ class DatasetWildFire(xr.Dataset):
                , flimit: int = 1
                , blimit: int = 1
                , max_occurence: int = -1
-               ):
+               ) -> DatasetWildFire:
         """
         A recursive function that remove the nan values on a datacube.
 
@@ -199,7 +199,7 @@ class DatasetWildFire(xr.Dataset):
         # # If the original datacube has not been changed from the copy after the filling
         # # or if the maximum occurence wanted is reached
         if self.equals(_datacube) or max_occurence == 0:
-            return None
+            return self
 
         # recursive on the _datacube
         return self.fbfill(variables = variables
@@ -208,3 +208,15 @@ class DatasetWildFire(xr.Dataset):
                            , blimit=blimit
                            , max_occurence=max_occurence - 1
                       )
+
+    # Function to clip a datasets to the area of interest
+    def clip_to_aoi(self, aoi):
+        """Clips the dataset to the area of interest
+
+         Parameters
+        ----------
+        aoi : list, default []
+            Specify upon which variable of the dataset we want to fill.
+            if empty it will contain all the variables of the dataset."""
+        "
+        self.rio.clip(aoi.geometry.apply(mapping), aoi.crs)
