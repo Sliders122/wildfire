@@ -51,7 +51,8 @@ if __name__ == "__main__":
     #Filling missing values of lst_day and lst_night with xr.interpolate_na method with a quadratic method
     lst_day_filter = lst_day_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(dim='ydim')
     lst_night_filter = lst_night_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(dim='ydim')
-
+    # Filling missing values of era with xr.interpolate_na method with a linear method
+    era_filter = era_filter.interpolate_na(dim='time', method='linear').ffill(dim='xdim').ffill(dim='ydim')
 
 
     # Filling with ffill method
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     # fwi_filter = fwi_filter.ffill(dim='xdim').ffill(dim='ydim')
     active_fire_filter = active_fire_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
     burn_mask_filter = burn_mask_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
-    #density = density.ffill(dim='x', limit=None).ffill(dim='y', limit=None)
+    density = density.ffill(dim='x', limit=None).ffill(dim='y', limit=None)
 
 
     # Create a CRS object from a poj4 string for sinuoidal projection
@@ -213,4 +214,4 @@ if __name__ == "__main__":
 
     # Save the data set
     #ds.to_netcdf(path_data + 'datacube.nc')
-    ds_gps.to_netcdf(path_data + 'datacube_gps.nc')
+    ds_gps.to_netcdf(path_data + 'final_datacube_gps.nc')
