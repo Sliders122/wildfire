@@ -18,8 +18,8 @@ To manage the dependencies it is recommanded to use a conda environement and use
 
 First add `conda-forge` to your channels with:
 ```
-copy conda config --add channels conda-forge
-copy conda config --set channel_priority strict
+conda config --add channels conda-forge
+conda config --set channel_priority strict
 ```
 ### Rasterio 
 [(more info here)](https://github.com/conda-forge/rasterio-feedstock#installing-rasterio)
@@ -41,6 +41,12 @@ conda install -c conda-forge xarray dask netCDF4 bottleneck`
 [(more info here)](https://geopandas.org/en/stable/getting_started/install.html)
 ```
 conda install --channel conda-forge geopandas
+```
+
+### Rioxarray
+[(more info here)](https://github.com/conda-forge/rioxarray-feedstock)
+```
+conda install --channel conda-forge rioxarray
 ```
 
 
