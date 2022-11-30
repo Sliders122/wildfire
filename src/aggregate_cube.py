@@ -7,6 +7,15 @@ import rioxarray as rxr
 import geopandas as gpd
 from shapely.geometry import mapping
 
+# Function to print the descriptive statistics of the dataset
+def print_dataset_statistics(ds):
+    print("Descriptive statistics of the dataset")
+    print('The mean of the dataset is : ', ds.mean().values)
+    print('The median of the dataset is : ', ds.median().values)
+    print('The standard deviation of the dataset is : ', ds.std().values)
+    print('The minimum value of the dataset is : ', ds.min().values)
+    print('The maximum value of the dataset is : ', ds.max().values)
+
 # define function to loop over the dataset to fill the new variable
 
 #defining the function to get a period days time selection
@@ -84,5 +93,54 @@ if __name__ == "__main__":
                          '_1_km_16_days_EVI']
 
     # Adding aggregated variables with fill_ds_mean function
-    ds = fill_ds_mean(ds, period_size=1, list_variables=dynamic_variables)
+    #ds = fill_ds_mean(ds, period_size=1, list_variables=dynamic_variables)
+
+    # Create a column t2m_mean which is the mean of t2m over the last 10 days before the current day with rolling function
+    #ds['t2m_mean'] = ds.t2m.rolling(time=10, center=False).mean()
+
+    # Do the sae for all dynamic variables
+    for var in dynamic_variables:
+        ds[var + '_mean'] = ds[var].rolling(time=10, center=False).mean()
+
+    # put this for loop into a function
+    def aggregate_dataset(ds, dynamic_variables, period_size=10):
+        """
+        This function appends and fills the new variables of the dataset with the mean values,
+        then drops the old ones.
+        input:
+            the_ds: the dataset
+            period_size: the size of the period
+            list_variables: the variables to be selected
+        output:
+            the dataset with the new variables filled
+        """
+        # Add a new variable to the dataset
+        for var in dynamic_variables:
+            ds[var + '_mean'] = ds[var].rolling(time=period_size, center=False).mean().dropna(dim='time')
+
+        return ds
+
+
+    # Check content of the xarray dataset
+    print(ds)
+
+
+
+
+    #ds['t2m_mean'] = ds.t2m.rolling(time=10, center=True).mean()
+
+    # plot this new variable
+    ds.t2m_mean.isel(time=100).plot()
+
+    # Describe this new variable
+    print_dataset_statistics(ds.t2m_mean)
+
+    #PLot the distribution of the variable t2m_mean and t2m
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+    ds.t2m_mean.isel(time=50).plot.hist(ax=ax[0])
+    ds.t2m.isel(time=50).plot.hist(ax=ax[1])
+    ax[0].set_title('t2m_mean')
+    ax[1].set_title('t2m')
+    plt.show()
+
 
