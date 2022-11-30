@@ -62,24 +62,6 @@ def resample_to_daily_categorical(dataray):
     """Resamples the categorical dataray to daily values"""
     return dataray.resample(time="1D").nearest()
 
-    # put this for loop into a function
-def aggregate_dataset(ds, dynamic_variables, period_size=10):
-    """
-    This function appends and fills the new variables of the dataset with the mean values,
-    then drops the old ones.
-    input:
-        the_ds: the dataset
-        period_size: the size of the period
-        list_variables: the variables to be selected
-    output:
-        the dataset with the new variables filled
-    """
-    # Add a new variable to the dataset
-    for var in dynamic_variables:
-        ds[var + '_mean'] = ds[var].rolling(time=period_size, center=False).mean().dropna(dim='time')
-
-    return ds
-
 # # Definition of a function to check on the dataset open before combining them
 # def print_raster(raster):
 #     """Prints the raster's metadata and shape"""
