@@ -221,7 +221,7 @@ if __name__ == "__main__":
                          '_1_km_16_days_EVI']
 
     # Create aggregated data variables: mean over 10 days
-    ds_gps = hz.aggregate_dynamic_variables(ds_gps, dynamic_variables)
+    ds_gps = hz.aggregate_dataset(ds= ds_gps, dynamic_variables=dynamic_variables, period_size=10)
 
     # Save the data set
     #ds.to_netcdf(path_data + 'datacube.nc')
