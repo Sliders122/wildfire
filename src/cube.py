@@ -209,8 +209,19 @@ if __name__ == "__main__":
     # Deleting attribute grid_mapping of the ds_gps data set , variable 'Burn_Date'
     del ds_gps['Burn_Date'].attrs['grid_mapping']
 
+    # define a list of dynamic variables
+    dynamic_variables = ['ET_500m',
+                         'Fpar_500m',
+                         'u10',
+                         'v10',
+                         't2m',
+                         'tp',
+                         'LST_Day_1km',
+                         'LST_Night_1km',
+                         '_1_km_16_days_EVI']
 
-
+    # Create aggregated data variables: mean over 10 days
+    ds_gps = hz.aggregate_dynamic_variables(ds_gps, dynamic_variables)
 
     # Save the data set
     #ds.to_netcdf(path_data + 'datacube.nc')
