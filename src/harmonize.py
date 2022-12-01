@@ -82,6 +82,25 @@ def aggregate_dataset(ds, dynamic_variables, period_size=10):
 
     return ds
 
+def split_datacube(the_ds, first_year=2015, last_year=2019):
+    """
+    This function returns a list of datacubes, one for each year in the given period
+    input:
+        the_ds: the dataset
+        first_year: the first year of the period
+        last_year: the last year of the period
+    output:
+        a list of datacubes
+    """
+    # Create an empty list
+    list_ds = []
+    # Loop over the years
+    for year in range(first_year, last_year+1):
+        # Select the datacube for the year
+        ds_year = the_ds.sel(time=str(year))
+        # Append the datacube to the list
+        list_ds.append(ds_year)
+    return list_ds
 
 
 # # Definition of a function to check on the dataset open before combining them
