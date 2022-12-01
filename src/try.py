@@ -152,7 +152,7 @@ if __name__ == "__main__":
     list_df[0].to_csv(path_data + 'df_2010.csv')
     print("2010 ok")
 
-    df_final = pd.concat(list_df, axis=0, ignore_index=True)
+    df_final = pd.concat(list_df, axis=0, ignore_index=False)
 
     # Save the final dataframe into a csv
     df_final.to_csv(path_data + 'df_final.csv')
