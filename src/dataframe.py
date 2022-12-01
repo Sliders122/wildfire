@@ -41,8 +41,8 @@ if __name__ == "__main__":
         """
         # Add new variables to the dataset
         for var in list_variables:
-            the_ds[var + '_last'+ str(period_size) + 'days' + '_mean'] = ds[var].rolling(time=period_size,
-             center=False).mean().dropna(dim='time')
+            the_ds[var + '_last'+ str(period_size) + 'days_mean'] = ds[var].rolling(time=period_size, 
+                center=False).construct("window").mean("window", skipna=True)#.dropna(dim='time')
 
         # drop the old variables
         the_ds = the_ds.drop(dynamic_variables)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     ds = fill_ds_mean(datacube, period_size=10, list_variables = dynamic_variables)
 
     # Define the dataframe
-    def get_df(the_ds, first_year=2015, last_year=2019):
+    def get_df(the_ds, first_year=2015, last_year=2019, target_var='FireMask'):
         """
         This function returns a dataframe from the dataset in the given period,
          dropping unnecessary variables and all NaN values
@@ -61,32 +61,50 @@ if __name__ == "__main__":
         output:
             the_df: the dataframe
         """
+        
+        rus = RandomUnderSampler()
+        
         # define an empty dataframe
         the_df = pd.DataFrame()
+        
         # Divide the dataset into every year
         
         for year in range(first_year, last_year+1):
+            
+            # Define the dataset for the year
+            the_df_year  = the_ds.sel(time=slice(str(year) + '-01-01', str(year) + '-12-30')).to_dataframe()
 
-            the_df = the_df.append(the_ds.sel(time=slice(str(year) + '-01-01'
-            , str(year) + '-12-30')).to_dataframe())
-        
-        # Reshape FireMask variable
-        
             # drop the columns we don't need anymore
-        the_df = the_df.drop(columns = ["crs" , "band", "spatial_ref"])
+            the_df_year = the_df_year.drop(columns = ["crs" , "band", "spatial_ref"])
 
-            # drop observations with FireMask = 0, 1 & 2 equivalent to NaN
-        the_df = the_df[(the_df.FireMask != 0) & (the_df.FireMask != 1) & (the_df.FireMask != 2)]
+            # Reshape FireMask variable          
+                # drop the rows with NaN values
+            the_df_year = the_df_year.dropna()
+                # drop observations with FireMask = 0, 1 & 2 equivalent to NaN
+            the_df_year = the_df_year[(the_df_year.FireMask != 0) & (the_df_year.FireMask != 1) & (the_df_year.FireMask != 2)]
 
-        # drop the rows with NaN values
-        the_df = the_df.dropna()
+            y_res = the_df_year[target_var].astype(int)
 
+            # Get y_res binary
+            y_res = y_res.replace([7, 8, 9], 1)
+            y_res = y_res.replace([3, 4, 5], 0)
+
+            # Add time x and y coordinates a new column
+            the_df_year = the_df_year.reset_index()
+                        
+            # Reshape the dataframe
+            the_df_year = rus.fit_resample(the_df_year, y_res)[0]
+                              
+            # Append the dataframe
+            the_df = the_df.append(the_df_year)
+     
         return the_df
+
     
     df = get_df(ds, first_year=2015, last_year=2019)
 
     # Define a function to get balanced preditors and binary target variables from the dataframe
-    def get_balanced_pred_target(the_df, target_var):
+    def get_balanced_pred_target(the_df, target_var = 'FireMask'):
         """
         This function returns the predictors and target variables from the dataframe
         input:
@@ -96,16 +114,16 @@ if __name__ == "__main__":
             X_res: the balanced predictors
             y_res: the balanced target variable
         """
-        X = the_df.drop(columns=[target_var])
-        y = the_df[target_var]
+        X_res = the_df.drop(columns=[target_var])
+        y_res = the_df[target_var].astype(int)
 
         # Get y binary
-        y = y.replace([7, 8, 9], 1)
-        y = y.replace([3, 4, 5], 0)
+        y_res = y_res.replace([7, 8, 9], 1)
+        y_res = y_res.replace([3, 4, 5], 0)
 
-        #Undersampling the dataframes to balance the classes
-        rus = RandomUnderSampler()
-        X_res, y_res = rus.fit_resample(X, y)
+        ##Undersampling the dataframes to balance the classes
+        #rus = RandomUnderSampler()
+        #X_res, y_res = rus.fit_resample(X, y)
 
         return X_res, y_res
 
