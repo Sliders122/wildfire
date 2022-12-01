@@ -46,19 +46,17 @@ if __name__ == "__main__":
     2) Select the period of interest: 2010-2021
     
     1) Harmonize the datacube to the same calendar: Julian calendar'''
-    # Convert era calendar to cftime.DatetimeJulian
     era_filter = era_filter.convert_calendar('julian')
 
     """ 2) Select the period of interest: 2010-2021"""
-    # Subset the data sets to the same time period: 2010-01-01 to 2021-01-01
-    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    era_filter = era_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2011-01-01'))
-    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2011-01-01'))
+    ndvi_filter = ndvi_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lai_filter = lai_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    evap_filter = evap_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    era_filter = era_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_night_filter = lst_night_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    lst_day_filter = lst_day_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    active_fire_filter = active_fire_filter.sel(time=slice('2010-01-01', '2021-01-01'))
+    burn_mask_filter = burn_mask_filter.sel(time=slice('2010-01-01', '2021-01-01'))
 
     ''' ----------------------------------------------------------------------------------------------------------------
 -------------------------------------4. Fill the missing values ------------------------------------------------
@@ -68,17 +66,14 @@ if __name__ == "__main__":
     3) Forwardfill for the other variables which have less than 10% of missing values and are categorical variables'''
 
     ''' 1) Quadratic interpolation '''
-    # Filling missing values of lst_day and lst_night with xr.interpolate_na method with a quadratic method
     lst_day_filter = lst_day_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(dim='ydim')
     lst_night_filter = lst_night_filter.interpolate_na(dim='time', method='quadratic').ffill(dim='xdim').ffill(
         dim='ydim')
 
     ''' 2) Linear interpolation '''
-    # Filling missing values of era with xr.interpolate_na method with a linear method
     era_filter = era_filter.interpolate_na(dim='time', method='linear').ffill(dim='xdim').ffill(dim='ydim')
 
     ''' 3) Forwardfill '''
-    # Filling with ffill method
     ndvi_filter = ndvi_filter.ffill(dim='time').ffill(dim='xdim').ffill(dim='ydim')
     lai_filter = lai_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
     evap_filter = evap_filter.ffill(dim='xdim').ffill(dim='ydim').ffill(dim='time')
@@ -87,13 +82,16 @@ if __name__ == "__main__":
     density = density.ffill(dim='x', limit=None).ffill(dim='y', limit=None)
 
     ''' ----------------------------------------------------------------------------------------------------------------
--------------------------------------5. Writing CRS ---------------------------------------------------------------'''
+-------------------------------------5. Writing CRS ---------------------------------------------------------------
 
-    # Create a CRS object from a poj4 string for sinuoidal projection
+    1) Create a CRS object from a poj4 string for sinuoidal projection
+    2) Set the CRS of the data sets with hz.define_crs()'''
+
+    ''' 1) Create a CRS object from a poj4 string for sinuoidal projection'''
     crs_sinu = rasterio.crs.CRS.from_string(
         "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
 
-    # Set the CRS of the data sets with hz.define_crs()
+    ''' 2) Set the CRS of the data sets with hz.define_crs()'''
     ndvi_filter = hz.define_crs(ndvi_filter, crs_sinu)
     lai_filter = hz.define_crs(lai_filter, crs_sinu)
     evap_filter = hz.define_crs(evap_filter, crs_sinu)
@@ -133,7 +131,6 @@ if __name__ == "__main__":
     4) Projection of the other data sets'''
 
     ''' 1) Define a common grid to project the data sets'''
-    #   Definition of the common grid
     common_grid = rxr.open_rasterio(path_data + 'final_lst_day_1D_1km.nc').isel(time=0)
 
     ''' 2) Projection of the Era5 data set'''
@@ -186,7 +183,7 @@ if __name__ == "__main__":
     4) Rename the coordinates of the data sets to match the other data sets
     5) Merge the data sets'''
 
-    '''1) Delete the attribute grid_mapping: unecessary and conflictual'''
+    '''1) Delete the attribute grid_mapping: unnecessary and conflictual'''
     # Deleting attribute grid_mapping of the burn_mask_filter data set
     del burn_mask_filter.attrs['grid_mapping']
     # Deleting attribute grid_mapping of the evap_filter_proj data set
@@ -223,15 +220,12 @@ if __name__ == "__main__":
     ds_xdimydim = xr.combine_by_coords(list_xdimydim, combine_attrs='drop_conflicts')
 
     ''' 3) Match the coordinates of the data sets to match the other data sets'''
-    # Match the coordinates values of the data sets
     ds_xdimydim_xdimydim = ds_xdimydim.assign_coords(xdim=ds_xy.coords['x'].values, ydim=ds_xy.coords['y'].values)
 
     ''' 4) Rename the coordinates to match the other data sets'''
-    # Renaming the coordinates of the data sets to match the other data sets
     ds_xdimydim_xdimydim = ds_xdimydim_xdimydim.rename({'xdim': 'x', 'ydim': 'y'})
 
     ''' 5) Merge the data sets'''
-    # Merge the data sets
     ds = xr.merge([ds_xy, ds_xdimydim_xdimydim])
 
     ''' ----------------------------------------------------------------------------------------------- 
