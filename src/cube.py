@@ -89,7 +89,6 @@ if __name__ == "__main__":
     ''' ----------------------------------------------------------------------------------------------------------------
 -------------------------------------5. Writing CRS ---------------------------------------------------------------'''
 
-
     # Create a CRS object from a poj4 string for sinuoidal projection
     crs_sinu = rasterio.crs.CRS.from_string(
         "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
@@ -245,11 +244,6 @@ if __name__ == "__main__":
     # Projection of ds into WGS84
     ds_gps = ds.rio.reproject("EPSG:4326", grid_mapping_name='latitude_longitude')
 
-
-
-
-
-
     ''' ----------------------------------------------------------------------------------------------------------------
 ------------------------------- 11 Create aggregated variables --------------------------------------------
 
@@ -277,8 +271,6 @@ if __name__ == "__main__":
         list_ds[i] = hz.aggregate_dataset(list_ds[i], period_size=10, dynamic_variables=dynamic_variables)
         print(f"list_ds[{i}] ok")
 
-
-
     ''' 4) Concatenate the datacubes'''
     aggregate_datacube = xr.concat(list_ds, dim="time")
 
@@ -287,7 +279,6 @@ if __name__ == "__main__":
 
     1) Delete unnecessary attributes
     2) Save the datacube'''
-
 
     ''' 1) Delete unnecessary attributes'''
     del aggregate_datacube['First_Day'].attrs['grid_mapping']
