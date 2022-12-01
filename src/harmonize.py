@@ -76,7 +76,10 @@ def aggregate_dataset(ds, dynamic_variables, period_size=10):
     """
     # Add a new variable to the dataset
     for var in dynamic_variables:
-        ds[var + '_mean'] = ds[var].rolling(time=period_size, center=False).construct("window").mean("window", skipna=True).dropna(dim='time')
+        ds[var + '_mean'] = ds[var].rolling(time=period_size, center=False).mean()
+    # Drop the old variables
+    ds = ds.drop(dynamic_variables)
+
     return ds
 
 
