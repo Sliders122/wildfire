@@ -111,6 +111,8 @@ def cross_validation(models, the_df, X, y, n_splits=10, random_state=71):
             recall = classification_report(y_test, y_pred, output_dict=True)['1']['recall']
             # compute the f1 score
             f1 = classification_report(y_test, y_pred, output_dict=True)['1']['f1-score']
+            # compute the time to fit the model in seconds
+            time_fit = (time_1 - time_0).total_seconds()
             # store the results in the dataframe
             results = results.append({'model': model.__class__.__name__,
                                       'accuracy': accuracy,
