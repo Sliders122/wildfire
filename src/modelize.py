@@ -15,7 +15,9 @@ from lightgbm import LGBMClassifier
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 import datetime
+import pickle
 
 
 # Create a path to the data directory
@@ -23,6 +25,8 @@ path_data = "C:/Users/luigi/OneDrive - Data ScienceTech Institute/Projet_PML/dat
 
 # open the csv file with the data
 df = pd.read_csv(path_data + "df_final.csv")
+
+
 
 # define a function to get the correlation matrix and plot it
 def get_correlation_matrix(the_df, target_var='FireMask'):
@@ -60,14 +64,14 @@ def get_correlation_matrix(the_df, target_var='FireMask'):
 model_LR = skl.linear_model.LogisticRegression(C=0.05, l1_ratio=None, max_iter=10000)
 model_KNN = skl.neighbors.KNeighborsClassifier()
 model_RF = skl.ensemble.RandomForestClassifier(n_estimators=100, max_depth=2)
-model_XGB = XGBClassifier(n_estimators=100, max_depth=6, use_label_encoder=False)
+model_XGB = XGBClassifier(n_estimators=100, max_depth=2, use_label_encoder=False)
 model_LGBM = LGBMClassifier(n_estimators=100, max_depth=2)
 
 # put all those models in a list
 models = [model_LR, model_KNN, model_RF, model_XGB, model_LGBM]
 
 # define a function to perform cross validation for the given models
-def cross_validation(models, the_df, X, y, n_splits=10, random_state=71):
+def cross_validation(models, the_df, X, y, n_splits=10, random_state=71, stratified=True):
     """
     This function performs cross validation for the given models
     input:
@@ -125,3 +129,88 @@ def cross_validation(models, the_df, X, y, n_splits=10, random_state=71):
                              ascending=False).reset_index(drop=True)
     # return the dataframe
     return results
+
+# Split the data into train on 2010 to 2017 and test on 2018 to 2020
+df = pd.read_csv(path_data + "df_final.csv", parse_dates=["time"])
+# Split the data into train and test
+df_train = df[df["time"] < "2018-01-01"]
+df_test = df[df["time"] >= "2018-01-01"]
+
+# define a function to fit a lgmb model
+def fit_lgbm_model(the_df_train, n_estimators=100, max_depth=2, path_data=""):
+    """
+    This function fits a lgmb model
+    input:
+        the_df_train: the dataframe
+        n_estimators: the number of estimators
+        max_depth: the maximum depth
+        path_data: the path where to save the pickle file
+    output:
+        the model
+    """
+    # define the model
+    model = LGBMClassifier(n_estimators=n_estimators, max_depth=max_depth)
+    # define the features and the target
+    X_train = the_df_train.drop(['time','FireMask'], axis=1)
+    y_train = the_df_train['FireMask'].astype(int)
+    # fit the model
+    model.fit(X_train, y_train)
+    # save the pickle file
+    pickle.dump(model, open('model_lgbm.pkl', 'wb'))
+    # generate the pickle file
+    pickle.dump(lgbm_model, open(path_data + 'model_lgbm.pkl', 'wb'))
+    # return the pickle
+    return model
+
+# define a function to predict the target
+def predict_lgbm_model(the_df_test, model):
+    """
+    This function predicts the lgbm model
+    input:
+        the_df_test: the tet dataframe
+        model: the model
+    output:
+        the predictions
+    """
+    # define the features
+    X_test = the_df_test.drop(['time','FireMask'], axis=1)
+    # predict the model
+    y_pred = model.predict(X_test)
+    # give the perobabilities of the predictions
+    y_pred_proba = model.predict_proba(X_test)
+    # Add the predictions and the probabilities to the dataframe
+    #the_df_test['FireMask_pred'] = y_pred
+    #the_df_test['FireMask_proba'] = y_pred_proba[:,1]
+
+    # Stack the prediction with the time and target
+    the_df_pred = pd.DataFrame({"time":the_df_test["time"], "FireMask": the_df_test["FireMask"].astype(int),
+                                "FireMask_pred": y_pred, "FireMask_proba": y_pred_proba[:, 1]})
+    
+    # return the the dataframe
+    return the_df_pred
+
+# define a function to compute the metrics
+def plot_metrics(model, y_test, y_pred):
+    """
+    This function plots the accuracy, precision, recall, f1-score
+    input:
+        y_test: the test target
+        y_pred: the predictions
+    output:
+        None
+    """
+    results = pd.DataFrame(columns=['model', 'accuracy', 'precision', 'recall', 'f1'])
+    # compute the metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    # plot the metrics
+    results = results.append({'model': model.__class__.__name__,
+                                      'accuracy': accuracy,
+                                      'precision': precision,
+                                      'recall': recall,
+                                      'f1': f1,
+                                      }, ignore_index=True)
+    return results
+    
