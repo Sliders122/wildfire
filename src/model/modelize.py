@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from sklearn.model_selection import KFold
@@ -9,18 +10,15 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 import datetime
 import pickle
-
-
-# Create a path to the data directory
-path_data = "C:/Users/luigi/OneDrive - Data ScienceTech Institute/Projet_PML/dataset/"
-
-# open the csv file with the data
-df = pd.read_csv(path_data + "df_final.csv")
-
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
 
 
 # define a function to get the correlation matrix and plot it
-def get_correlation_matrix(the_df, target_var='FireMask'):
+def get_correlation_matrix(the_df):
     """
     This function returns the correlation matrix of the dataframe
     input:
@@ -30,44 +28,20 @@ def get_correlation_matrix(the_df, target_var='FireMask'):
     """
     # Correlation matrix : 
     cor = the_df.corr() 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(15, 15))
     sns.heatmap(cor, square = True, cmap="coolwarm", linewidths=0.5, annot=True, xticklabels='auto', yticklabels='auto',)
-        
-    # get the correlation matrix of the target variable
-    #cor_target = abs(cor[target_var])
-    # select the features with a correlation higher than 0.5
-    #relevant_features = cor_target[cor_target>0.5]
-    # print the features
-    #print(relevant_features)
-    
+    # return the correlation matrix    
     return cor
 
-# First, define the models we want to use
-# We use the default parameters for each model
-# We use the same random state for each model to be able to compare them
-# We use the class_weight parameter to balance the classes
-# We use the max_iter parameter to avoid convergence warnings
-# We use the n_estimators parameter to avoid convergence warnings
-# We use the max_depth parameter to avoid convergence warnings
-# We use the l1_ratio parameter to avoid convergence warnings
-
-# Linear regression, k nearest neighbors, random forest, xgboost, lightgbm 
-model_LR = skl.linear_model.LogisticRegression(C=0.05, l1_ratio=None, max_iter=10000)
-model_KNN = skl.neighbors.KNeighborsClassifier()
-model_RF = skl.ensemble.RandomForestClassifier(n_estimators=100, max_depth=2)
-model_XGB = XGBClassifier(n_estimators=100, max_depth=2, use_label_encoder=False)
-model_LGBM = LGBMClassifier(n_estimators=100, max_depth=2)
-
-# put all those models in a list
-models = [model_LR, model_KNN, model_RF, model_XGB, model_LGBM]
 
 # define a function to perform cross validation for the given models
-def cross_validation(models, the_df, X, y, n_splits=10, random_state=71, stratified=True):
+def cross_validation(models, the_df, n_splits=10, random_state=71, stratified=True, shuffle=True):
     """
     This function performs cross validation for the given models
     input:
         models: the models to be evaluated
-        the_df: the dataframe
+        X: the features
+        y: the target
         n_splits: the number of splits
         random_state: the random state
     output:
@@ -78,15 +52,21 @@ def cross_validation(models, the_df, X, y, n_splits=10, random_state=71, stratif
     # Create conditional statement to check if stratified or not
     if stratified:
         # create a stratified k-fold object
-        skf = StratifiedKFold(n_splits=n_splits, shuffle=False) #, random_state=random_state)
+        if shuffle:
+            kf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+        else:
+            kf = StratifiedKFold(n_splits=n_splits, shuffle=False)
     else:
         # create a non stratified k-fold object
-        skf = KFold(n_splits=n_splits, shuffle=False) #, random_state=random_state)
-    # Define the features and the target
-    X = the_df.drop(['FireMask'], axis=1)
+        if shuffle:
+            kf = KFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+        else:
+            kf = KFold(n_splits=n_splits, shuffle=False) 
+    # Define target and features
+    X = the_df.drop(['time','FireMask'], axis=1)
     y = the_df['FireMask'].astype(int)
     # loop over the folds
-    for train_index, test_index in skf.split(X, y):
+    for train_index, test_index in kf.split(X, y):
         # split the data
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
@@ -108,27 +88,24 @@ def cross_validation(models, the_df, X, y, n_splits=10, random_state=71, stratif
             f1 = classification_report(y_test, y_pred, output_dict=True)['1']['f1-score']
             # compute the time to fit the model in seconds
             time_fit = (time_1 - time_0).total_seconds()
-            # store the results in the dataframe
+
+            # store the results in the dataframe sorted by accuracy
             results = results.append({'model': model.__class__.__name__,
                                       'accuracy': accuracy,
                                       'precision': precision,
                                       'recall': recall,
                                       'f1': f1,
                                       'Time to fit': time_fit}, ignore_index=True)
+
             # group the results by model
             results = results.groupby('model').mean().reset_index().sort_values(by='accuracy',
                              ascending=False).reset_index(drop=True)
     # return the dataframe
     return results
 
-# Split the data into train on 2010 to 2017 and test on 2018 to 2020
-df = pd.read_csv(path_data + "df_final.csv", parse_dates=["time"])
-# Split the data into train and test
-df_train = df[df["time"] < "2018-01-01"]
-df_test = df[df["time"] >= "2018-01-01"]
 
-# define a function to fit a lgmb model
-def fit_lgbm_model(the_df_train, n_estimators=100, max_depth=2, path_data=""):
+# Define the function to fit the model
+def fit_lgbm_model(the_df_train, n_estimators=100, max_depth=2):
     """
     This function fits a lgmb model
     input:
@@ -149,12 +126,12 @@ def fit_lgbm_model(the_df_train, n_estimators=100, max_depth=2, path_data=""):
     model.fit(X_train, y_train)
     time_end = datetime.datetime.now()
     # Add the time as model attribute
-    model.time_to_fit = (time_end - time_start).total_seconds()
-    # generate and save the pickle file
-    pickle.dump(model, open(path_data + 'model_lgbm.pkl', 'wb'))
+    model.time = (time_end - time_start).total_seconds()
+    # Return the model
     return model
 
-# define a function to predict the target
+
+# Define the function to predict the target
 def predict_lgbm_model(the_df_test, model):
     """
     This function predicts the lgbm model
@@ -174,11 +151,11 @@ def predict_lgbm_model(the_df_test, model):
     # Stack the prediction with the time and target
     the_df_pred = pd.DataFrame({"time":the_df_test["time"], "FireMask": the_df_test["FireMask"].astype(int),
                                 "FireMask_pred": y_pred, "FireMask_proba": y_pred_proba[:, 1]})
-    
     # return the the dataframe
     return the_df_pred
 
-# define a function to compute the metrics
+
+# define a function to plot accuracy, precision, recall, f1-score and time to fit
 def plot_metrics(model, y_test, y_pred):
     """
     This function plots the accuracy, precision, recall, f1-score
@@ -200,7 +177,7 @@ def plot_metrics(model, y_test, y_pred):
                                       'precision': precision,
                                       'recall': recall,
                                       'f1': f1,
-                                      'time to fit [s]': model.time_to_fit
+                                      'time to fit [s]': model.time
                                       }, ignore_index=True)
     return results
     
