@@ -2,6 +2,8 @@
 
 # WildFire Forecast: a geospatial datascience project
 
+A presentation of the project is accessible in a powerpoint version in the section resources >Presentation -> [Wildfire forecast](https://github.com/Sliders122/wildfire/blob/main/resources/Presentation/Wildfire%20forecast.pptx)
+
 ## Table of Content
 
 - [WildFire Forecast: a geospatial datascience project](#wildfire-forecast--a-geospatial-datascience-project)
@@ -11,10 +13,10 @@
   * [Structure of the project](#structure-of-the-project)
   * [Installation](#installation)
     + [Environement for the Datacube creation](#environement-for-the-datacube-creation)
-    + [Rasterio](#rasterio)
-    + [Xarray](#xarray)
-    + [Geopandas](#geopandas)
-    + [Rioxarray](#rioxarray)
+      - [Rasterio](#rasterio)
+      - [Xarray](#xarray)
+      - [Geopandas](#geopandas)
+      - [Rioxarray](#rioxarray)
     + [Environement for building the model](#environement-for-building-the-model)
   * [Authors and acknowledgment](#authors-and-acknowledgment)
   * [Context](#context)
@@ -22,13 +24,15 @@
 ## Description
 
 The aim of this project is to build 2 applications:
-- One application to visualize a risk map for predicted fire ignition localisation in the next day. This tools is meant to be used to help firefighters to better organize their ressources.
+- One application to visualize a risk map to predict fire ignition localisations in the next day. This tools is meant to be used to help firefighters to better organize their ressources.
 - A second application to go deeper in the explanation of the model. This meant to be used to test the resilience of the model and to understand on a longer term how can we decrease the risk.
+
+The Area of Interest is the South East of France, and we have builtour model base on data from 2010 to 2021. The size of each pixel is  1day * 1km *1km.
 
 
 ## Pipeline
 
-We collect data from satellite imagery, reanalysis and vector drawing. Then we process this data to merge same in a unique datacube. From this datacube, we can easily extract a dataframe wich will be used for model training and prediction.
+We collect data from satellites, reanalysis and vector drawings. These data comes in different structure (resolution, granularity, projection : more info in [Raw_data_desc.md](https://github.com/Sliders122/wildfire/blob/main/src/cube/Raw_data_desc.md)) and need to be harmonized before merge. The processing and the merge is done in [cube.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/cube.py). From this datacube, we can extract a dataframe wich will be used for model training and prediction, we have decided to balance the data 50/50. It turns we have around 15k observations with no fires and 15k observations with fire. After conducted a model selection  (),  we have decided to keep a LightGBMH classifier as a good tradeoff between performance and speed of training. It is from this model we have deployed two applications.
 Finally , the risk map will be deploy on a PowerBi Service, and the dashboard application to explain the feature importance on a AWS server.
 
 ![](https://github.com/Sliders122/wildfire/blob/main/resources/Image/data_pipeline.png?raw=true)
@@ -79,7 +83,7 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-### Rasterio
+#### Rasterio
 
 [(more info here)](https://github.com/conda-forge/rasterio-feedstock#installing-rasterio)
 
@@ -89,7 +93,7 @@ Once the `conda-forge` channel has been enabled, `rasterio` can be installed wit
 conda install rasterio
 ```
 
-### Xarray
+#### Xarray
 
 Xarray Installation [(more info here)](https://docs.xarray.dev/en/stable/getting-started-guide/installing.html) if you haven't set conda forge as a priority channel, you can still mention it excplicitly
 
@@ -97,7 +101,7 @@ Xarray Installation [(more info here)](https://docs.xarray.dev/en/stable/getting
 conda install -c conda-forge xarray dask netCDF4 bottleneck`
 ````
 
-### Geopandas
+#### Geopandas
 
 [(more info here)](https://geopandas.org/en/stable/getting_started/install.html)
 
@@ -105,7 +109,7 @@ conda install -c conda-forge xarray dask netCDF4 bottleneck`
 conda install --channel conda-forge geopandas
 ```
 
-### Rioxarray
+#### Rioxarray
 
 [(more info here)](https://github.com/conda-forge/rioxarray-feedstock)
 
