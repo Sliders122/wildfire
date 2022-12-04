@@ -1,6 +1,5 @@
 import numpy as np
-import xarray as xr
-import pandas as pd
+
 
 
 # Define a function which split the datacube into 10 datacubes, one for each year. Call them ds_2015, ds_2016, etc.
@@ -122,53 +121,9 @@ def get_df_list(list_ds):
 
 
 
-if __name__ == "__main__":
-    # Create a path to the data directory
-    path_data = "../../data/final/"
-
-    # Load the data set
-    datacube = xr.open_dataset(path_data + 'aggregate_datacube.nc')
 
 
-    # Split the datacube into 10 datacubes, one for each year
-    list_ds = split_datacube(datacube, first_year=2010, last_year=2021)
 
-
-    # print the length of the list
-    print(len(list_ds))
-
-    # Create a list of dataframes
-    list_df = get_df_list(list_ds)
-
-    # Stack the dataframes from the list on top of each other
-
-    # Save the first dataframe into a csv
-    list_df[0].to_csv(path_data + 'df_2010.csv')
-    print("2010 ok")
-
-    df_final = pd.concat(list_df, axis=0, ignore_index=False)
-
-    # Save the final dataframe into a csv
-    df_final.to_csv(path_data + 'df_final.csv')
-
-    # Save the dataframe
-   #df_210 df_final.to_csv(path_data + 'final_dataframe_gps.csv')
-
-    # # Print the shape of the final dataframe
-    # print(df_final.shape)
-    #
-    # # Print the number of fires
-    # print(df_final['FireMask'].sum())
-    #
-    # # Print the number of non fires
-    # print(df_final['FireMask'].count() - df_final['FireMask'].sum())
-    #
-    # # Print the number of observations
-    # print(df_final['FireMask'].count())
-    #
-    #
-    # # Print the head of the dataframe
-    # print(df_final.head())
 
 
 
