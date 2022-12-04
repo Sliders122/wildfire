@@ -154,12 +154,13 @@ def fit_lgbm_model(the_df_train, n_estimators=100, max_depth=2, path_data=""):
     X_train = the_df_train.drop(['time','FireMask'], axis=1)
     y_train = the_df_train['FireMask'].astype(int)
     # fit the model
+    time_start = datetime.datetime.now()
     model.fit(X_train, y_train)
-    # save the pickle file
-    pickle.dump(model, open('model_lgbm.pkl', 'wb'))
-    # generate the pickle file
-    pickle.dump(lgbm_model, open(path_data + 'model_lgbm.pkl', 'wb'))
-    # return the pickle
+    time_end = datetime.datetime.now()
+    # Add the time as model attribute
+    model.time_to_fit = (time_end - time_start).total_seconds()
+    # generate and save the pickle file
+    pickle.dump(model, open(path_data + 'model_lgbm.pkl', 'wb'))
     return model
 
 # define a function to predict the target
@@ -178,10 +179,7 @@ def predict_lgbm_model(the_df_test, model):
     y_pred = model.predict(X_test)
     # give the perobabilities of the predictions
     y_pred_proba = model.predict_proba(X_test)
-    # Add the predictions and the probabilities to the dataframe
-    #the_df_test['FireMask_pred'] = y_pred
-    #the_df_test['FireMask_proba'] = y_pred_proba[:,1]
-
+    
     # Stack the prediction with the time and target
     the_df_pred = pd.DataFrame({"time":the_df_test["time"], "FireMask": the_df_test["FireMask"].astype(int),
                                 "FireMask_pred": y_pred, "FireMask_proba": y_pred_proba[:, 1]})
@@ -211,6 +209,7 @@ def plot_metrics(model, y_test, y_pred):
                                       'precision': precision,
                                       'recall': recall,
                                       'f1': f1,
+                                      'time to fit [s]': model.time_to_fit
                                       }, ignore_index=True)
     return results
     
