@@ -13,7 +13,7 @@ if __name__ == "__main__":
 ----------------------------------------1. Load raw dataset ---------------------------------------------------------'''
 
     # Create a path to the data directory
-    path_data = "../data/final/"
+    path_data = "../../data/final/"
 
     # Load the data set
     ndvi = xr.open_dataset(path_data + 'final_ndvi_16D_1km.nc')

@@ -1,13 +1,7 @@
 import numpy as np
-import rasterio
-import matplotlib.pyplot as plt
 import xarray as xr
-import rioxarray as rxr
-import geopandas as gpd
-import harmonize as hz
 import pandas as pd
-from imblearn.under_sampling import RandomUnderSampler
-import harmonize as hz
+
 
 # Define a function which split the datacube into 10 datacubes, one for each year. Call them ds_2015, ds_2016, etc.
 def split_datacube(the_ds, first_year=2015, last_year=2019):
@@ -130,7 +124,7 @@ def get_df_list(list_ds):
 
 if __name__ == "__main__":
     # Create a path to the data directory
-    path_data = "../data/final/"
+    path_data = "../../data/final/"
 
     # Load the data set
     datacube = xr.open_dataset(path_data + 'aggregate_datacube.nc')

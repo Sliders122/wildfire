@@ -1,4 +1,3 @@
-from harmonize import *
 from tests import *
 
 # #     output: harmonized dataray to daily resolution from 01/01/2010 to 01/09/2022

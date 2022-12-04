@@ -1,20 +1,11 @@
 import numpy as np
-import rasterio
 import matplotlib.pyplot as plt
-import xarray as xr
-import rioxarray as rxr
-import geopandas as gpd
-import harmonize as hz
 import pandas as pd
-from imblearn.under_sampling import RandomUnderSampler
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import classification_report
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 import datetime
 import pickle
