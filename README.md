@@ -1,4 +1,8 @@
-# WildFire Forecast
+# WildFire Forecast: a geospatial datascience project
+
+## Table of Content
+
+[TOC]
 
 ## Name
 
@@ -6,88 +10,46 @@ WildFire forecast
 
 ## Description
 
-The aim of this project is to create an Artificial Inteligence Model that will be able to predict fire in the PACA (France) region
+The aim of this project is to build 2 applications:
+- One application to visualize a risk map for predicted fire ignition localisation in the next day. This tools is meant to be used to help firefighters to better organize their ressources.
+- A second application to go deeper in the explanation of the model. This meant to be used to test the resilience of the model and to understand on a longer term how can we decrease the risk.
 
-![image.png](assets/image.png)
+
+## Pipeline
+
+We collect data from satellite imagery, reanalysis and vector drawing. Then we process this data to merge same in a unique datacube. From this datacube, we can easily extract a dataframe wich will be used for model training and prediction.
+Finally , the risk map will be deploy on a PowerBi Service, and the dashboard application to explain the feature importance on a AWS server.
+
+![](https://github.com/Sliders122/wildfire/blob/main/resources/Image/data_pipeline.png?raw=true)
+
 
 ## Structure of the project
 
-├── .github                     : CI/CD pipeline using GitHub Actions
-|  └── workflows                : Contains yml files that trigger the workflows in GitHub Actions.
-|       ├── docker_flask.yml
-|       ├── docker_telegram.yml
-|       ├── terraform.yml
-|       └── unittests.yml
-├── api                         : Python Flask REST API with Swagger
-|   ├── helpers
-|   ├── tests
-|   ├── .dockerignore
-|   ├── __init__.py
-|   ├── app.py
-|   ├── Dockerfile
-|   ├── README.md
-|   └── requirements.txt
-├── generators                   : Sensor's data generators in real-time
-|   ├── kafkaproducer
-|   ├── raspberrypi
-|   ├── sensors
-|   ├── __init__.py
-|   ├── pc.py
-|   ├── raspberry.py
-|   └── README.md
-├── iac                         : Infrastructure as Code
-|   ├── .terraform
-|   ├── .gitignore
-|   ├── config.tf
-|   ├── data.tf
-|   ├── main.tf
-|   ├── outputs.tf
-|   ├── terraform.tfstate
-|   ├── terraform.tfstate.backup
-|   ├── variables.tf
-|   └── README.md               : Further explanations on IaC part
-├── kafkaconsumer               : Kafka Consumer
-|   ├── schemas
-|   ├── .dockerignore
-|   ├── __init__.py
-|   ├── config.py
-|   ├── consumer.py
-|   ├── Dockerfile
-|   ├── dynamodb.py
-|   ├── main.py
-|   ├── pc.py
-|   ├── predictor.py
-|   ├── raspberry.py
-|   ├── README.md
-|   └── requirements.txt
-├── model                        : ML Modeling
-|   ├── exported_models
-|   ├── training_data
-|   ├── __init__.py
-|   ├── config.py
-|   ├── data_retriever.py
-|   ├── model.py
-|   └── README.md
-├── telegrambot                  : Telegram Bot for alerting and monitoring
-|   ├── .dockerignore
-|   ├── __init__.py
-|   ├── config.py
-|   ├── Dockerfile
-|   ├── dynamodb_config.py
-|   ├── main_telegram.py
-|   ├── requirements.txt
-|   ├── utils.py
-|   └── README.md
-├── image                       : Folder containing all the images used in the README.md files.
-├── .env                        : File to store environment variables (not published)
-├── .gitignore
-├── README.md
-├── requirements.txt            : File containing the library requirements to run the project locally
-└── setup.py                    : Setup python file of the project
+###GitHub: main branch
 
-## Visuals
+- **resources**
+	- Images
+	- Modis Documentation
+	- Presentation: with the powerpoint presenation of the project
+	- Tuto - Earth Data Analytics Online Certificate
 
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- **src**: it follows the pipeline describe above Cube -> Dataframe -> Model -> Deployement
+	- [cube](https://github.com/Sliders122/wildfire/tree/main/src/cube) --> everything about the cube. from collecting the data to build the final cube
+		- [Explanation](https://github.com/Sliders122/wildfire/tree/main/src/cube/explanation): a list of Jupyter Notebook used to explain how we have build the cube and face difficulties
+		- [Raw_data_desc.md](https://github.com/Sliders122/wildfire/blob/main/src/cube/Raw_data_desc.md): to provide an analysis of the data before processing
+		- [cube.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/cube.py): script to build the cube
+		- [harmonize.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/harmonize.py): module with all the builded functions used in the cube.py script
+
+	- [dataframe](https://github.com/Sliders122/wildfire/tree/main/src/dataframe)
+		- [dataframe.py](https://github.com/Sliders122/wildfire/blob/main/src/dataframe/dataframe.py) : script to create and save the dataframe from the datacube
+		- [module_dataframe.py](https://github.com/Sliders122/wildfire/blob/main/src/dataframe/module_dataframe.py) : module with built functions used in the dataframe script
+		
+	- [model](https://github.com/Sliders122/wildfire/tree/main/src/model) 
+input: dataframe  
+output: dataframe+modèle
+		- modelize.py
+		- model_selection.ipynb
+		- model.pkl
 
 ## Installation
 
