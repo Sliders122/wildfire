@@ -13,10 +13,10 @@ A presentation of the project is accessible in a powerpoint version in the secti
   * [Structure of the project](#structure-of-the-project)
   * [Installation](#installation)
     + [Environement for the Datacube creation](#environement-for-the-datacube-creation)
-    + [Rasterio](#rasterio)
-    + [Xarray](#xarray)
-    + [Geopandas](#geopandas)
-    + [Rioxarray](#rioxarray)
+      - [Rasterio](#rasterio)
+      - [Xarray](#xarray)
+      - [Geopandas](#geopandas)
+      - [Rioxarray](#rioxarray)
     + [Environement for building the model](#environement-for-building-the-model)
   * [Authors and acknowledgment](#authors-and-acknowledgment)
   * [Context](#context)
@@ -83,7 +83,7 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-### Rasterio
+#### Rasterio
 
 [(more info here)](https://github.com/conda-forge/rasterio-feedstock#installing-rasterio)
 
@@ -93,7 +93,7 @@ Once the `conda-forge` channel has been enabled, `rasterio` can be installed wit
 conda install rasterio
 ```
 
-### Xarray
+#### Xarray
 
 Xarray Installation [(more info here)](https://docs.xarray.dev/en/stable/getting-started-guide/installing.html) if you haven't set conda forge as a priority channel, you can still mention it excplicitly
 
@@ -101,7 +101,7 @@ Xarray Installation [(more info here)](https://docs.xarray.dev/en/stable/getting
 conda install -c conda-forge xarray dask netCDF4 bottleneck`
 ````
 
-### Geopandas
+#### Geopandas
 
 [(more info here)](https://geopandas.org/en/stable/getting_started/install.html)
 
@@ -109,7 +109,7 @@ conda install -c conda-forge xarray dask netCDF4 bottleneck`
 conda install --channel conda-forge geopandas
 ```
 
-### Rioxarray
+#### Rioxarray
 
 [(more info here)](https://github.com/conda-forge/rioxarray-feedstock)
 
