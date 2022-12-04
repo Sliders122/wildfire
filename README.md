@@ -2,6 +2,8 @@
 
 # WildFire Forecast: a geospatial datascience project
 
+A presentation of the project is accessible in a powerpoint version in the section resources >Presentation -> [Wildfire forecast](https://github.com/Sliders122/wildfire/blob/main/resources/Presentation/Wildfire%20forecast.pptx)
+
 ## Table of Content
 
 - [WildFire Forecast: a geospatial datascience project](#wildfire-forecast--a-geospatial-datascience-project)
@@ -22,13 +24,15 @@
 ## Description
 
 The aim of this project is to build 2 applications:
-- One application to visualize a risk map for predicted fire ignition localisation in the next day. This tools is meant to be used to help firefighters to better organize their ressources.
+- One application to visualize a risk map to predict fire ignition localisations in the next day. This tools is meant to be used to help firefighters to better organize their ressources.
 - A second application to go deeper in the explanation of the model. This meant to be used to test the resilience of the model and to understand on a longer term how can we decrease the risk.
+
+The Area of Interest is the South East of France, and we have builtour model base on data from 2010 to 2021. The size of each pixel is  1day * 1km *1km.
 
 
 ## Pipeline
 
-We collect data from satellite imagery, reanalysis and vector drawing. Then we process this data to merge same in a unique datacube. From this datacube, we can easily extract a dataframe wich will be used for model training and prediction.
+We collect data from satellites, reanalysis and vector drawings. These data comes in different structure (resolution, granularity, projection : more info in [Raw_data_desc.md](https://github.com/Sliders122/wildfire/blob/main/src/cube/Raw_data_desc.md)) and need to be harmonized before merge. The processing and the merge is done in [cube.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/cube.py). From this datacube, we can extract a dataframe wich will be used for model training and prediction, we have decided to balance the data 50/50. It turns we have around 15k observation with no fire and 15k observation with fire.
 Finally , the risk map will be deploy on a PowerBi Service, and the dashboard application to explain the feature importance on a AWS server.
 
 ![](https://github.com/Sliders122/wildfire/blob/main/resources/Image/data_pipeline.png?raw=true)
