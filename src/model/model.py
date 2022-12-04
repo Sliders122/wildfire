@@ -54,19 +54,29 @@ if __name__ == "__main__":
     models = [model_LR, model_KNN, model_RF, model_XGB, model_LGBM]
 
     # Run the cross validation for each models the for combinatotions of stratified and shuffle 
-    # stratified = True, shuffle = True
-    #results_stratified_shuffle = mz.cross_validation(models, df, n_splits=10, random_state=71, 
-     #                                                           stratified=True, shuffle=True)
+    #stratified = True, shuffle = True
+    results_stratified_shuffle = mz.cross_validation(models, df, n_splits=10, random_state=71, 
+                                                                stratified=True, shuffle=True)
     # stratified = True, shuffle = False
-    #results_stratified_noshuffle = mz.cross_validation(models, df, n_splits=10, random_state=71,
-    #                                                            stratified=True, shuffle=False)
+    results_stratified_noshuffle = mz.cross_validation(models, df, n_splits=10, random_state=71,
+                                                                stratified=True, shuffle=False)
     # stratified = False, shuffle = True
-    #results_nostatified_shuffle = mz.cross_validation(models, df, n_splits=10, random_state=71, 
-     #                                                           stratified=False, shuffle=True)
+    results_nostatified_shuffle = mz.cross_validation(models, df, n_splits=10, random_state=71, 
+                                                                stratified=False, shuffle=True)
     # stratified = False, shuffle = False
-    #results_nostatified_noshuffle = mz.cross_validation(models, df, n_splits=10, random_state=71, 
-     #                                                           stratified=False, shuffle=False) 
-    print()
+    results_nostatified_noshuffle = mz.cross_validation(models, df, n_splits=10, random_state=71, 
+                                                                stratified=False, shuffle=False) 
+    print('Stratified and shuffle')
+    print(results_stratified_shuffle)
+
+    print('Stratified and no shuffle')
+    print(results_stratified_noshuffle)
+    
+    print('No stratified and shuffle')
+    print(results_nostatified_shuffle)
+
+    print('No stratified and no shuffle')
+    print(results_nostatified_noshuffle)
     
 
     # Split the data into train on 2010 to 2017 and test on 2018 to 2020
