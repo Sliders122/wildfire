@@ -4,23 +4,20 @@
 
 ## Table of Content
 
-
 - [WildFire Forecast: a geospatial datascience project](#wildfire-forecast--a-geospatial-datascience-project)
   * [Table of Content](#table-of-content)
   * [Description](#description)
   * [Pipeline](#pipeline)
   * [Structure of the project](#structure-of-the-project)
-    + [GitHub: main branch](#github--main-branch)
   * [Installation](#installation)
+    + [Environement for the Datacube creation](#environement-for-the-datacube-creation)
     + [Rasterio](#rasterio)
     + [Xarray](#xarray)
     + [Geopandas](#geopandas)
     + [Rioxarray](#rioxarray)
+    + [Environement for building the model](#environement-for-building-the-model)
   * [Authors and acknowledgment](#authors-and-acknowledgment)
-  * [License](#license)
-  * [Project status](#project-status)
   * [Context](#context)
-
 
 ## Description
 
@@ -39,35 +36,39 @@ Finally , the risk map will be deploy on a PowerBi Service, and the dashboard ap
 
 ## Structure of the project
 
-### GitHub: main branch
 
-#### **resources**
-- Images
-- Modis Documentation
-- Presentation: with the powerpoint presenation of the project
-- Tuto - Earth Data Analytics Online Certificate
+- **resources**
+	- Images
+	- Modis Documentation
+	- Presentation: with the powerpoint presenation of the project
+	- Tuto - Earth Data Analytics Online Certificate
 
-#### **src**: it follows the pipeline describe above Cube -> Dataframe -> Model -> Deployement
-- [cube](https://github.com/Sliders122/wildfire/tree/main/src/cube) --> everything about the cube. from collecting the data to build the final cube
-	- [Explanation](https://github.com/Sliders122/wildfire/tree/main/src/cube/explanation): a list of Jupyter Notebook used to explain how we have build the cube and face difficulties
-	- [Raw_data_desc.md](https://github.com/Sliders122/wildfire/blob/main/src/cube/Raw_data_desc.md): to provide an analysis of the data before processing
-	- [cube.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/cube.py): script to build the cube
-	- [harmonize.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/harmonize.py): module with all the builded functions used in the cube.py script
+- **src**: it follows the pipeline describe above Cube -> Dataframe -> Model -> Deployement
+	- [cube](https://github.com/Sliders122/wildfire/tree/main/src/cube) --> everything about the cube. from collecting the data to build the final cube
+		- [Explanation](https://github.com/Sliders122/wildfire/tree/main/src/cube/explanation): a list of Jupyter Notebook used to explain how we have build the cube and face difficulties
+		- [Raw_data_desc.md](https://github.com/Sliders122/wildfire/blob/main/src/cube/Raw_data_desc.md): to provide an analysis of the data before processing
+		- [cube.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/cube.py): script to build the cube
+		- [harmonize.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/harmonize.py): module with all the builded functions used in the cube.py script
 
-- [dataframe](https://github.com/Sliders122/wildfire/tree/main/src/dataframe)
-	- [dataframe.py](https://github.com/Sliders122/wildfire/blob/main/src/dataframe/dataframe.py) : script to create and save the dataframe from the datacube
-	- [module_dataframe.py](https://github.com/Sliders122/wildfire/blob/main/src/dataframe/module_dataframe.py) : module with built functions used in the dataframe script
+	- [dataframe](https://github.com/Sliders122/wildfire/tree/main/src/dataframe)
+		- [dataframe.py](https://github.com/Sliders122/wildfire/blob/main/src/dataframe/dataframe.py) : script to create and save the dataframe from the datacube
+		- [module_dataframe.py](https://github.com/Sliders122/wildfire/blob/main/src/dataframe/module_dataframe.py) : module with built functions used in the dataframe script
+		- df_final.csv: output of the script
 		
-- [model](https://github.com/Sliders122/wildfire/tree/main/src/model) 
+	- [model](https://github.com/Sliders122/wildfire/tree/main/src/model) 
+		- modelize.py
+		- model_selection.ipynb: exlanation of modele selection
+		- model.pkl: modele selected : lightGBMH classifier
 
-input: dataframe  
-output: dataframe+modèle
-	- modelize.py
-	- model_selection.ipynb
-	- model.pkl
+	- [deployement:](https://github.com/Sliders122/wildfire/tree/main/src/deployement)
+		-	[powerbi_model.pbix](https://github.com/Sliders122/wildfire/blob/main/src/deployement/powerbi_model.pbix): the report to be download
+		-	...
 
 ## Installation
+We have to build two different virtual environement, one for building the cube and another one for the model.
+As we have deployed the model on a docker, we do not enter in the detail on how to intall dependencies for the second environement. Nevertheless, building the cube, need careful attention while installing packages.
 
+### Environement for the Datacube creation
 One difficulties of the project is to manage the depedencies. We work under a windows OS, with python 3.9 +.
 To manage the dependencies it is recommanded to use a conda environement and use conda forge in first choice. The advantage of using the conda package manager is that it provides pre-built binaries for all the required and optional dependencies for Rasterio, Xarray and geopandas.
 
@@ -112,6 +113,9 @@ conda install --channel conda-forge geopandas
 conda install --channel conda-forge rioxarray
 ```
 
+### Environement for building the model
+
+No need for that, it has been deployed on a Docker with love, for you :) But in case of, it runs with python 3.8. 
 
 
 ## Authors and acknowledgment
@@ -120,13 +124,7 @@ Luigi GIANNETTI - luigi.giannetti1@gmail.com
 Quentin VOITURON - Quentin.voituron@gadz.org
 Sascha MOCCOZET - saschamoccozet.pro@posteo.net
 
-## License
 
-For open source projects, say how it is licensed.
-
-## Project status
-
-Work in progress
 
 ## Context
 
