@@ -13,6 +13,7 @@ df_ytest = df['FireMask']
 model_path = open('model_lgbm.pkl' , 'rb')
 model = pickle.load(model_path)
 
+
 # Create and run the dashboard on port 9050
 explainer = ClassifierExplainer(model, df_xtest, df_ytest)
 ExplainerDashboard(explainer).run(port=9050)
