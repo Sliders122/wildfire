@@ -31,8 +31,13 @@ if __name__ == "__main__":
     # open the csv file with the data
     df = pd.read_csv(path_data + "df_final.csv", parse_dates=["time"])
 
+    # add a column for the month
+    df["month"] = df["time"].dt.month
+    # add a column for the trimester
+    df["trimester"] = df["time"].dt.quarter
+
     # get the correlation matrix and plot it
-    mz.get_correlation_matrix(df)
+    print(mz.get_correlation_matrix(df))
     
     # First, define the models we want to use
     # We use the default parameters for each model
@@ -42,7 +47,9 @@ if __name__ == "__main__":
     # We use the n_estimators parameter to avoid convergence warnings
     # We use the max_depth parameter to avoid convergence warnings
     # We use the l1_ratio parameter to avoid convergence warnings
-    
+    """
+    #Untile to run the cross validation
+
     # Linear regression, k nearest neighbors, random forest, xgboost, lightgbm 
     model_LR = skl.linear_model.LogisticRegression(C=0.05, l1_ratio=None, max_iter=10000)
     model_KNN = skl.neighbors.KNeighborsClassifier()
@@ -77,10 +84,9 @@ if __name__ == "__main__":
 
     print('No stratified and no shuffle')
     print(results_nostatified_noshuffle)
-    
+    """
 
     # Split the data into train on 2010 to 2017 and test on 2018 to 2020
-    df = pd.read_csv(path_data + "df_final.csv", parse_dates=["time"])
     # Split the data into train and test
     df_train = df[df["time"] < "2018-01-01"]
     df_test = df[df["time"] >= "2018-01-01"]
@@ -109,5 +115,7 @@ if __name__ == "__main__":
 
     # save the dataframe to csv
     df_model.to_csv("df_model.csv", index=False)
+
+    print(df_model.head())
 
     
