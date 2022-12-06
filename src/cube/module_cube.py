@@ -249,10 +249,10 @@ def split_datacube(the_ds, first_year=2015, last_year=2019):
 #     return dataray.to_netcdf(path)
 
 
-# # Read the data exported from the harmonize.py script
-# # Definition of a function to read the data exported from the harmonize.py script
+# # Read the data exported from the module_cube.py script
+# # Definition of a function to read the data exported from the module_cube.py script
 # def read_data(path):
-#     """Reads the data exported from the harmonize.py script"""
+#     """Reads the data exported from the module_cube.py script"""
 #     "input: path to the data"
 #     return xr.open_dataset(path)
 

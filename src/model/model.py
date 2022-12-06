@@ -1,5 +1,5 @@
 import numpy as np
-import modelize as mz
+import module_model as mz
 import rasterio
 import matplotlib.pyplot as plt
 import seaborn as sns
