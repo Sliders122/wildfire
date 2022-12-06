@@ -52,7 +52,7 @@ Finally , the risk map will be deploy on a PowerBi Service, and the dashboard ap
 		- [Explanation](https://github.com/Sliders122/wildfire/tree/main/src/cube/explanation): a list of Jupyter Notebook used to explain how we have build the cube and face difficulties
 		- [Raw_data_desc.md](https://github.com/Sliders122/wildfire/blob/main/src/cube/Raw_data_desc.md): to provide an analysis of the data before processing
 		- [cube.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/cube.py): script to build the cube
-		- [harmonize.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/harmonize.py): module with all the builded functions used in the cube.py script
+		- [module_cube.py](https://github.com/Sliders122/wildfire/blob/main/src/cube/harmonize.py): module with all the builded functions used in the cube.py script
 
 	- [dataframe](https://github.com/Sliders122/wildfire/tree/main/src/dataframe)
 		- [dataframe.py](https://github.com/Sliders122/wildfire/blob/main/src/dataframe/dataframe.py) : script to create and save the dataframe from the datacube
