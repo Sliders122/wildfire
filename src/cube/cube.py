@@ -281,4 +281,4 @@ if __name__ == "__main__":
     del aggregate_datacube['FireMask'].attrs['grid_mapping']
 
     ''' 2) Save the datacube'''
-    aggregate_datacube.to_netcdf(path_data + 'dummy.nc')
+    aggregate_datacube.to_netcdf(path_data + 'aggregate_datacube.nc')
