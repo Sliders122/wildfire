@@ -26,6 +26,6 @@ if __name__ == "__main__":
     df_final = pd.concat(list_df, axis=0, ignore_index=False)
 
     # Save the final dataframe into a csv
-    #df_final.to_csv(path_data + 'df_final.csv')
+    df_final.to_csv(path_data + 'df_final.csv')
 
 
