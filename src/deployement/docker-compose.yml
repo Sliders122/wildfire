@@ -4,4 +4,4 @@ services:
     image: nginx
     build: .
     ports:
-      - "8080:9050"
+      - "5000:9050"
